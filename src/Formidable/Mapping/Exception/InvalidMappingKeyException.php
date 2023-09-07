@@ -13,6 +13,6 @@ final class InvalidMappingKeyException extends DomainException implements Except
 {
     public static function fromInvalidMappingKey(mixed $mappingKey): self
     {
-        return new self(sprintf('Mapping key must be of type string, but got %s', gettype($mappingKey)));
+        return new self(sprintf('Mapping key must be a nonempty string, but got %s', gettype($mappingKey)));
     }
 }

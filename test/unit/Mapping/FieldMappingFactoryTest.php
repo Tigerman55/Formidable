@@ -30,26 +30,25 @@ class FieldMappingFactoryTest extends TestCase
     public function ignoredFactory(): void
     {
         $fieldMapping = FieldMappingFactory::ignored('foo');
-        self::assertAttributeInstanceOf(IgnoredFormatter::class, 'binder', $fieldMapping);
-        self::assertAttributeCount(0, 'constraints', $fieldMapping);
+        self::assertInstanceOf(IgnoredFormatter::class, $fieldMapping->binder);
+        self::assertCount(0, $fieldMapping->getConstraints());
     }
 
     #[Test]
     public function textFactoryWithoutConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::text();
-        $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
-        $this->assertAttributeCount(0, 'constraints', $fieldMapping);
+        self::assertInstanceOf(TextFormatter::class, $fieldMapping->binder);
+        self::assertCount(0, $fieldMapping->getConstraints());
     }
 
     #[Test]
     public function textFactoryWithConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::text(1, 2, 'iso-8859-15');
-        $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
-        $this->assertAttributeCount(2, 'constraints', $fieldMapping);
-
-        $constraints = self::readAttribute($fieldMapping, 'constraints');
+        $constraints  = $fieldMapping->getConstraints();
+        self::assertInstanceOf(TextFormatter::class, $fieldMapping->binder);
+        self::assertCount(2, $constraints);
 
         $this->assertAttributeSame('iso-8859-15', 'encoding', $constraints[0]);
         $this->assertAttributeSame(1, 'lengthLimit', $constraints[0]);

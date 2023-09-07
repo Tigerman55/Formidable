@@ -58,8 +58,8 @@ class FormErrorSequenceTest extends TestCase
         $formErrorSequenceB = new FormErrorSequence(new FormError('bar', ''));
         $formErrorSequenceC = $formErrorSequenceA->merge($formErrorSequenceB);
 
-        $this->assertNotSame($formErrorSequenceA, $formErrorSequenceC);
-        $this->assertNotSame($formErrorSequenceB, $formErrorSequenceC);
+        self::assertNotSame($formErrorSequenceA, $formErrorSequenceC);
+        self::assertNotSame($formErrorSequenceB, $formErrorSequenceC);
         self::assertCount(2, $formErrorSequenceC);
     }
 }

@@ -28,8 +28,10 @@ final class ObjectMapping implements MappingInterface
 {
     use MappingTrait;
 
+    /** @var array<non-empty-string, MappingInterface> */
     private array $mappings = [];
 
+    /** @var class-string */
     private string $className;
 
     private Closure $apply;
@@ -38,11 +40,10 @@ final class ObjectMapping implements MappingInterface
 
     private string $key = '';
 
-    /** @param MappingInterface[] $mappings */
     public function __construct(array $mappings, string $className, ?callable $apply = null, ?callable $unapply = null)
     {
         foreach ($mappings as $mappingKey => $mapping) {
-            if (! is_string($mappingKey)) {
+            if (! is_string($mappingKey) || $mappingKey === '') {
                 throw InvalidMappingKeyException::fromInvalidMappingKey($mappingKey);
             }
 
@@ -57,13 +58,13 @@ final class ObjectMapping implements MappingInterface
             throw NonExistentMappedClassException::fromNonExistentClass($className);
         }
 
-        if (null === $apply) {
+        if ($apply === null) {
             $apply = function (...$arguments) {
                 return new $this->className(...array_values($arguments));
             };
         }
 
-        if (null === $unapply) {
+        if ($unapply === null) {
             $unapply = function ($value) {
                 if (! $value instanceof $this->className) {
                     throw MappedClassMismatchException::fromMismatchedClass($this->className, $value);
@@ -73,8 +74,6 @@ final class ObjectMapping implements MappingInterface
                 $reflectionClass = new ReflectionClass($this->className);
 
                 foreach ($reflectionClass->getProperties() as $property) {
-                    /** @var ReflectionProperty $property */
-                    $property->setAccessible(true);
                     $values[$property->getName()] = $property->getValue($value);
                 }
 

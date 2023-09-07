@@ -6,6 +6,7 @@ namespace Test\Unit\Mapping;
 
 use Formidable\Mapping\Constraint\ConstraintInterface;
 use Formidable\Mapping\MappingInterface;
+use PHPUnit\Framework\Attributes\Test;
 
 trait MappingTraitTestTrait
 {
@@ -13,11 +14,11 @@ trait MappingTraitTestTrait
     public function verifyingReturnsNewInstanceWithNewConstraints(): void
     {
         $mappingA = $this->getInstanceForTraitTests();
-        $mappingB = $mappingA->verifying($this->prophesize(ConstraintInterface::class)->reveal());
-        $mappingC = $mappingB->verifying($this->prophesize(ConstraintInterface::class)->reveal());
+        $mappingB = $mappingA->verifying(self::createStub(ConstraintInterface::class));
+        $mappingC = $mappingB->verifying(self::createStub(ConstraintInterface::class));
 
-        $this->assertNotSame($mappingA, $mappingB);
-        $this->assertNotSame($mappingB, $mappingC);
+        self::assertNotSame($mappingA, $mappingB);
+        self::assertNotSame($mappingB, $mappingC);
         $this->assertAttributeCount(0, 'constraints', $mappingA);
         $this->assertAttributeCount(1, 'constraints', $mappingB);
         $this->assertAttributeCount(2, 'constraints', $mappingC);

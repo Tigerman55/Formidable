@@ -8,14 +8,7 @@ use DateTimeZone;
 
 final class FieldMappingFactory
 {
-    private static DateTimeZone $utcTimeZone;
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function __construct()
-    {
-    }
+    private static ?DateTimeZone $utcTimeZone = null;
 
     public static function ignored(mixed $value): FieldMapping
     {
@@ -113,7 +106,7 @@ final class FieldMappingFactory
 
     private static function getUtcTimeZone(): DateTimeZone
     {
-        if (null === self::$utcTimeZone) {
+        if (self::$utcTimeZone === null) {
             self::$utcTimeZone = new DateTimeZone('UTC');
         }
 

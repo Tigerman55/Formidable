@@ -17,7 +17,7 @@ class InvalidMappingKeyExceptionTest extends TestCase
     public function fromInvalidMappingKey(): void
     {
         self::assertSame(
-            'Mapping key must be of type string, but got object',
+            'Mapping key must be a nonempty string, but got object',
             InvalidMappingKeyException::fromInvalidMappingKey(new stdClass())->getMessage()
         );
     }

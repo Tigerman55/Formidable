@@ -22,10 +22,10 @@ use Formidable\Mapping\Exception\UnbindFailureException;
 use Formidable\Mapping\MappingInterface;
 use Formidable\Mapping\MappingTrait;
 use Formidable\Mapping\ObjectMapping;
+use PHPUnit\Framework\AssertionFailedError;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use stdClass;
 use Test\Unit\Mapping\TestAsset\SimpleObject;
 
@@ -40,7 +40,7 @@ class ObjectMappingTest extends TestCase
     public function constructionWithInvalidMappingKey(): void
     {
         $this->expectException(InvalidMappingKeyException::class);
-        new ObjectMapping([1 => $this->prophesize(MappingInterface::class)->reveal()], stdClass::class);
+        new ObjectMapping([1 => self::createStub(MappingInterface::class)], stdClass::class);
     }
 
     #[Test]
@@ -116,12 +116,12 @@ class ObjectMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind($data)->willThrow(new Exception('test'));
-        $mapping->withPrefixAndRelativeKey('', 'foo')->willReturn($mapping->reveal());
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->method('bind')->willThrowException(new Exception('test'));
+        $mapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($mapping);
 
         $objectMapping = new ObjectMapping([
-            'foo' => $mapping->reveal(),
+            'foo' => $mapping,
         ], SimpleObject::class);
 
         $this->expectException(BindFailureException::class);
@@ -131,8 +131,8 @@ class ObjectMappingTest extends TestCase
     #[Test]
     public function bindAppliesConstraints(): void
     {
-        $constraint = $this->prophesize(ConstraintInterface::class);
-        $constraint->__invoke(Argument::type(SimpleObject::class))->willReturn(new ValidationResult(
+        $constraint = self::createStub(ConstraintInterface::class);
+        $constraint->method('__invoke')->with(self::callback(static fn (SimpleObject $data) => true))->willReturn(new ValidationResult(
             new ValidationError('error', [], 'foo[bar]')
         ));
 
@@ -140,7 +140,7 @@ class ObjectMappingTest extends TestCase
         $objectMapping = (new ObjectMapping([
             'foo' => $this->getMockedMapping('foo', 'baz', $data),
             'bar' => $this->getMockedMapping('bar', 'bat', $data),
-        ], SimpleObject::class))->verifying($constraint->reveal());
+        ], SimpleObject::class))->verifying($constraint);
 
         $bindResult = $objectMapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
@@ -188,12 +188,12 @@ class ObjectMappingTest extends TestCase
     #[Test]
     public function exceptionOnUnbind(): void
     {
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->unbind('bar')->willThrow(new Exception('test'));
-        $mapping->withPrefixAndRelativeKey('', 'foo')->willReturn($mapping->reveal());
+        $mapping = self::createStub(MappingInterface::class);
+        $mapping->method('unbind')->with('bar')->willThrowException(new Exception('test'));
+        $mapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($mapping);
 
         $objectMapping = new ObjectMapping([
-            'foo' => $mapping->reveal(),
+            'foo' => $mapping,
         ], SimpleObject::class);
 
         $this->expectException(UnbindFailureException::class);
@@ -218,20 +218,24 @@ class ObjectMappingTest extends TestCase
     }
 
     #[Test]
-    public function keyCloneCreatesNewMapings(): void
+    public function keyCloneCreatesNewMappings(): void
     {
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->withPrefixAndRelativeKey('foo', 'bar')->shouldBeCalled()->willReturn($mapping->reveal());
-        $mapping->withPrefixAndRelativeKey('', 'bar')->shouldBeCalled()->willReturn($mapping->reveal());
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->expects(self::exactly(2))->method('withPrefixAndRelativeKey')->willReturnCallback(
+            static function (string $prefix, string $relativeKey) use ($mapping) {
+                if (($prefix === 'foo' && $relativeKey === 'bar') || ($prefix === '' && $relativeKey === 'bar')) {
+                    return $mapping;
+                }
+
+                throw new AssertionFailedError('Called too many times');
+            }
+        );
 
         (new ObjectMapping([
-            'bar' => $mapping->reveal(),
+            'bar' => $mapping,
         ], stdClass::class))->withPrefixAndRelativeKey('', 'foo');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getInstanceForTraitTests(): MappingInterface
     {
         return new ObjectMapping([], stdClass::class);
@@ -243,22 +247,24 @@ class ObjectMappingTest extends TestCase
         ?Data $data = null,
         bool $success = true
     ): MappingInterface {
-        $mapping = $this->prophesize(MappingInterface::class);
+        $mapping = $this->createMock(MappingInterface::class);
 
-        if (null !== $value) {
-            $mapping->unbind($value)->willReturn(Data::fromFlatArray([$key => $value]));
+        if ($value !== null) {
+            $mapping->method('unbind')
+                ->with($value)
+                ->willReturn(Data::fromFlatArray([$key => $value]));
         }
 
         if (null !== $value && null !== $data) {
-            $mapping->bind($data)->willReturn(
-                $success
+            $mapping->method('bind')
+                ->with($data)
+                ->willReturn($success
                 ? BindResult::fromValue($value)
-                : BindResult::fromFormErrors(new FormError($key, $value))
-            );
+                : BindResult::fromFormErrors(new FormError($key, $value)));
         }
 
-        $mapping->withPrefixAndRelativeKey('', $key)->willReturn($mapping->reveal());
+        $mapping->method('withPrefixAndRelativeKey')->with('', $key)->willReturn($mapping);
 
-        return $mapping->reveal();
+        return $mapping;
     }
 }

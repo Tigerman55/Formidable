@@ -31,9 +31,7 @@ final class ValidationResult
         return $validationResult;
     }
 
-    /**
-     * @return ValidationError[]
-     */
+    /** @return Traversable<array-key, ValidationError> */
     public function getValidationErrors(): Traversable
     {
         return new ArrayIterator($this->validationErrors);

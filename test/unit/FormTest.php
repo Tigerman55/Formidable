@@ -12,9 +12,9 @@ use Formidable\FormError\FormError;
 use Formidable\Mapping\BindResult;
 use Formidable\Mapping\MappingInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -28,10 +28,10 @@ class FormTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind()->shouldNotBeCalled();
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->expects(self::never())->method('bind');
 
-        $form = (new Form($mapping->reveal()))->withDefaults($data);
+        $form = (new Form($mapping))->withDefaults($data);
 
         self::assertFalse($form->hasErrors());
         self::assertSame('bar', $form->getField('foo')->getValue());
@@ -42,10 +42,13 @@ class FormTest extends TestCase
     {
         $data = Data::none();
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind($data)->willReturn(BindResult::fromValue('foo'))->shouldBeCalled();
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->expects(self::once())
+            ->method('bind')
+            ->with($data)
+            ->willReturn(BindResult::fromValue('foo'));
 
-        $form = (new Form($mapping->reveal()))->bind($data);
+        $form = (new Form($mapping))->bind($data);
 
         self::assertFalse($form->hasErrors());
         self::assertSame('foo', $form->getValue());
@@ -54,10 +57,13 @@ class FormTest extends TestCase
     #[Test]
     public function fill(): void
     {
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->unbind(['foo' => 'bar'])->willReturn(Data::fromFlatArray(['foo' => 'bar']))->shouldBeCalled();
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->expects(self::once())
+            ->method('unbind')
+            ->with(['foo' => 'bar'])
+            ->willReturn(Data::fromFlatArray(['foo' => 'bar']));
 
-        $form = (new Form($mapping->reveal()))->fill(['foo' => 'bar']);
+        $form = (new Form($mapping))->fill(['foo' => 'bar']);
         self::assertSame('bar', $form->getField('foo')->getValue());
     }
 
@@ -66,10 +72,13 @@ class FormTest extends TestCase
     {
         $data = Data::none();
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind($data)->willReturn(BindResult::fromFormErrors(new FormError('', 'foo')))->shouldBeCalled();
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->expects(self::once())
+            ->method('bind')
+            ->with($data)
+            ->willReturn(BindResult::fromFormErrors(new FormError('', 'foo')));
 
-        $form = (new Form($mapping->reveal()))->bind($data);
+        $form = (new Form($mapping))->bind($data);
 
         self::assertTrue($form->hasErrors());
         self::assertSame('foo', iterator_to_array($form->getGlobalErrors())[0]->getMessage());
@@ -80,7 +89,7 @@ class FormTest extends TestCase
     #[Test]
     public function exceptionOnGetValueWithoutBoundData(): void
     {
-        $form = new Form($this->prophesize(MappingInterface::class)->reveal());
+        $form = new Form(self::createStub(MappingInterface::class));
         $this->expectException(UnboundDataException::class);
         $form->getValue();
     }
@@ -88,22 +97,17 @@ class FormTest extends TestCase
     #[Test]
     public function bindFromPostRequest(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn('POST');
-        $request->getParsedBody()->willReturn(['foo' => 'bar']);
+        $request = self::createStub(ServerRequestInterface::class);
+        $request->method('getMethod')->willReturn('POST');
+        $request->method('getParsedBody')->willReturn(['foo' => 'bar']);
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind(Argument::that(function (Data $data) {
-            return $data->hasKey('foo') && 'bar' === $data->getValue('foo');
-        }))->willReturn(BindResult::fromValue('bar'))->shouldBeCalled();
-
-        $form = (new Form($mapping->reveal()))->bindFromRequest($request->reveal());
+        $form = (new Form($this->getSimpleMappingMock()))->bindFromRequest($request);
 
         self::assertFalse($form->hasErrors());
         self::assertSame('bar', $form->getValue());
     }
 
-    public function specialMethodProvider(): array
+    public static function specialMethodProvider(): array
     {
         return [
             ['PATCH'],
@@ -111,25 +115,17 @@ class FormTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider specialMethodProvider
-     */
-    #[Test]
-    public function bindFromPatchRequest(string $method)
+    #[Test, DataProvider('specialMethodProvider')]
+    public function bindFromPatchRequest(string $method): void
     {
-        $stream = $this->prophesize(StreamInterface::class);
-        $stream->__toString()->willReturn('foo=bar');
+        $stream = self::createStub(StreamInterface::class);
+        $stream->method('__toString')->willReturn('foo=bar');
 
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn($method);
-        $request->getBody()->willReturn($stream->reveal());
+        $request = self::createStub(ServerRequestInterface::class);
+        $request->method('getMethod')->willReturn($method);
+        $request->method('getBody')->willReturn($stream);
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind(Argument::that(function (Data $data) {
-            return $data->hasKey('foo') && 'bar' === $data->getValue('foo');
-        }))->willReturn(BindResult::fromValue('bar'))->shouldBeCalled();
-
-        $form = (new Form($mapping->reveal()))->bindFromRequest($request->reveal());
+        $form = (new Form($this->getSimpleMappingMock()))->bindFromRequest($request);
 
         self::assertFalse($form->hasErrors());
         self::assertSame('bar', $form->getValue());
@@ -138,16 +134,11 @@ class FormTest extends TestCase
     #[Test]
     public function bindFromGetRequest(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn('GET');
-        $request->getQueryParams()->willReturn(['foo' => 'bar']);
+        $request = self::createStub(ServerRequestInterface::class);
+        $request->method('getMethod')->willReturn('GET');
+        $request->method('getQueryParams')->willReturn(['foo' => 'bar']);
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind(Argument::that(function (Data $data) {
-            return $data->hasKey('foo') && 'bar' === $data->getValue('foo');
-        }))->willReturn(BindResult::fromValue('bar'))->shouldBeCalled();
-
-        $form = (new Form($mapping->reveal()))->bindFromRequest($request->reveal());
+        $form = (new Form($this->getSimpleMappingMock()))->bindFromRequest($request);
 
         self::assertFalse($form->hasErrors());
         self::assertSame('bar', $form->getValue());
@@ -156,38 +147,34 @@ class FormTest extends TestCase
     #[Test]
     public function bindFromRequestTrimsByDefault(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn('GET');
-        $request->getQueryParams()->willReturn(['foo' => ' bar ']);
+        $request = self::createStub(ServerRequestInterface::class);
+        $request->method('getMethod')->willReturn('GET');
+        $request->method('getQueryParams')->willReturn(['foo' => ' bar ']);
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind(Argument::that(function (Data $data) {
-            return $data->hasKey('foo') && 'bar' === $data->getValue('foo');
-        }))->willReturn(BindResult::fromValue('bar'))->shouldBeCalled();
-
-        (new Form($mapping->reveal()))->bindFromRequest($request->reveal());
+        (new Form($this->getSimpleMappingMock()))->bindFromRequest($request);
     }
 
     #[Test]
     public function trimForBindFromRequestCanBeDisabled(): void
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
-        $request->getMethod()->willReturn('GET');
-        $request->getQueryParams()->willReturn(['foo' => ' bar ']);
+        $request = self::createStub(ServerRequestInterface::class);
+        $request->method('getMethod')->willReturn('GET');
+        $request->method('getQueryParams')->willReturn(['foo' => ' bar ']);
 
-        $mapping = $this->prophesize(MappingInterface::class);
-        $mapping->bind(Argument::that(function (Data $data) {
-            return $data->hasKey('foo') && ' bar ' === $data->getValue('foo');
-        }))->willReturn(BindResult::fromValue(' bar '))->shouldBeCalled();
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->expects(self::once())
+            ->method('bind')
+            ->with(self::callback(static fn (Data $data) => $data->hasKey('foo') && $data->getValue('foo') === ' bar '))
+            ->willReturn(BindResult::fromValue(' bar '));
 
-        (new Form($mapping->reveal()))->bindFromRequest($request->reveal(), false);
+        (new Form($mapping))->bindFromRequest($request, false);
     }
 
     #[Test]
     public function withError(): void
     {
         $form = (
-            new Form($this->prophesize(MappingInterface::class)->reveal())
+            new Form(self::createStub(MappingInterface::class))
         )->withError(new FormError('bar', 'foo'));
         self::assertTrue($form->hasErrors());
         self::assertSame('bar', iterator_to_array($form->getErrors())[0]->getKey());
@@ -197,7 +184,7 @@ class FormTest extends TestCase
     #[Test]
     public function withGlobalError(): void
     {
-        $form = (new Form($this->prophesize(MappingInterface::class)->reveal()))->withGlobalError('foo');
+        $form = (new Form(self::createStub(MappingInterface::class)))->withGlobalError('foo');
         self::assertTrue($form->hasErrors());
         self::assertTrue($form->hasGlobalErrors());
         self::assertSame('', iterator_to_array($form->getGlobalErrors())[0]->getKey());
@@ -205,13 +192,23 @@ class FormTest extends TestCase
     }
 
     #[Test]
-    public function fieldRetrivalFromUnknownField(): void
+    public function fieldRetrievalFromUnknownField(): void
     {
-        $form  = new Form($this->prophesize(MappingInterface::class)->reveal());
+        $form  = new Form(self::createStub(MappingInterface::class));
         $field = $form->getField('foo');
 
         self::assertSame('foo', $field->getKey());
         self::assertSame('', $field->getValue());
         self::assertTrue($field->getErrors()->isEmpty());
+    }
+
+    private function getSimpleMappingMock(): MappingInterface
+    {
+        $mapping = $this->createMock(MappingInterface::class);
+        $mapping->expects(self::once())
+            ->method('bind')
+            ->with(self::callback(static fn(Data $data) => $data->hasKey('foo') && $data->getValue('foo') === 'bar'))
+            ->willReturn(BindResult::fromValue('bar'));
+        return $mapping;
     }
 }

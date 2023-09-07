@@ -16,7 +16,7 @@ use function count;
 final class FormErrorSequence implements IteratorAggregate, Countable
 {
     /** @var FormError[] */
-    private $formErrors = [];
+    private $formErrors;
 
     public function __construct(FormError ...$formErrors)
     {
@@ -40,6 +40,7 @@ final class FormErrorSequence implements IteratorAggregate, Countable
         return empty($this->formErrors);
     }
 
+    /** @return Traversable<array-key, FormError> */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->formErrors);

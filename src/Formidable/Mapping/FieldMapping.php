@@ -11,13 +11,10 @@ final class FieldMapping implements MappingInterface
 {
     use MappingTrait;
 
-    private FormatterInterface $binder;
-
     private string $key = '';
 
-    public function __construct(FormatterInterface $binder)
+    public function __construct(private readonly FormatterInterface $binder)
     {
-        $this->binder = $binder;
     }
 
     public function bind(Data $data): BindResult

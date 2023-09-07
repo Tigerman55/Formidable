@@ -30,6 +30,7 @@ final class Form implements FormInterface
         $this->mapping = $mapping;
         $this->data    = Data::none();
         $this->errors  = new FormErrorSequence();
+        $this->value   = null;
     }
 
     public function fill(mixed $formData): FormInterface

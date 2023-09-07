@@ -16,7 +16,6 @@ use Formidable\Mapping\OptionalMapping;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 
 #[CoversClass(OptionalMapping::class), CoversClass(MappingTrait::class)]
 class OptionalMappingTest extends TestCase
@@ -26,22 +25,22 @@ class OptionalMappingTest extends TestCase
     #[Test]
     public function bindNonExistentSingleValue(): void
     {
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->bind(Argument::any())->shouldNotBeCalled();
-        $wrappedMapping->withPrefixAndRelativeKey('', 'foo')->shouldBeCalled();
+        $wrappedMapping = $this->createMock(MappingInterface::class);
+        $wrappedMapping->expects(self::never())->method('bind');
+        $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('', 'foo');
 
-        $mapping = (new OptionalMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
         $this->assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
     }
 
     #[Test]
     public function bindEmptySingleValue(): void
     {
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->bind(Argument::any())->shouldNotBeCalled();
-        $wrappedMapping->withPrefixAndRelativeKey('', 'foo')->shouldBeCalled();
+        $wrappedMapping = $this->createMock(MappingInterface::class);
+        $wrappedMapping->expects(self::never())->method('bind');
+        $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('', 'foo');
 
-        $mapping = (new OptionalMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
         $this->assertNull($mapping->bind(Data::fromFlatArray(['foo' => '']))->getValue());
     }
 
@@ -50,22 +49,22 @@ class OptionalMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->bind($data)->willReturn(BindResult::fromValue('bar'));
-        $wrappedMapping->withPrefixAndRelativeKey('', 'foo')->willReturn(clone $wrappedMapping->reveal());
+        $wrappedMapping = self::createStub(MappingInterface::class);
+        $wrappedMapping->method('bind')->with($data)->willReturn(BindResult::fromValue('bar'));
+        $wrappedMapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($wrappedMapping);
 
-        $mapping = (new OptionalMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
         self::assertSame('bar', $mapping->bind($data)->getValue());
     }
 
     #[Test]
     public function bindFullyEmptyMultiValue(): void
     {
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->bind(Argument::any())->shouldNotBeCalled();
-        $wrappedMapping->withPrefixAndRelativeKey('', 'foo')->shouldBeCalled();
+        $wrappedMapping = $this->createMock(MappingInterface::class);
+        $wrappedMapping->expects(self::never())->method('bind');
+        $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('', 'foo');
 
-        $mapping = (new OptionalMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
         $this->assertNull($mapping->bind(Data::fromFlatArray(['foo[bar]' => '', 'foo[baz]' => '']))->getValue());
     }
 
@@ -74,11 +73,11 @@ class OptionalMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo[bar]' => '', 'foo[baz]' => 'bat']);
 
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->bind($data)->willReturn(BindResult::fromValue(['bar' => '', 'baz' => 'bat']));
-        $wrappedMapping->withPrefixAndRelativeKey('', 'foo')->willReturn($wrappedMapping->reveal());
+        $wrappedMapping = self::createStub(MappingInterface::class);
+        $wrappedMapping->method('bind')->with($data)->willReturn(BindResult::fromValue(['bar' => '', 'baz' => 'bat']));
+        $wrappedMapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($wrappedMapping);
 
-        $mapping = (new OptionalMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
         self::assertSame(['bar' => '', 'baz' => 'bat'], $mapping->bind($data)->getValue());
     }
 
@@ -87,22 +86,22 @@ class OptionalMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->bind($data)->willReturn(BindResult::fromFormErrors(new FormError('foo', 'bar')));
-        $wrappedMapping->withPrefixAndRelativeKey('', 'foo')->willReturn($wrappedMapping->reveal());
+        $wrappedMapping = self::createStub(MappingInterface::class);
+        $wrappedMapping->method('bind')->with($data)->willReturn(BindResult::fromFormErrors(new FormError('foo', 'bar')));
+        $wrappedMapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($wrappedMapping);
 
-        $mapping = (new OptionalMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
         self::assertSame('bar', $mapping->bind($data)->getFormErrorSequence()->getIterator()->current()->getMessage());
     }
 
     #[Test]
     public function constraintIsAppliedToNullReturn(): void
     {
-        $constraint = $this->prophesize(ConstraintInterface::class);
-        $constraint->__invoke(null)->willReturn(new ValidationResult())->shouldBeCalled();
+        $constraint = $this->createMock(ConstraintInterface::class);
+        $constraint->expects(self::once())->method('__invoke')->with(null)->willReturn(new ValidationResult());
 
-        $mapping = (new OptionalMapping($this->prophesize(MappingInterface::class)->reveal()))->verifying(
-            $constraint->reveal()
+        $mapping = (new OptionalMapping(self::createStub(MappingInterface::class)))->verifying(
+            $constraint
         );
         $this->assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
     }
@@ -112,18 +111,14 @@ class OptionalMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $constraint = $this->prophesize(ConstraintInterface::class);
-        $constraint->__invoke('bar')->willReturn(new ValidationResult(new ValidationError('bar')));
+        $constraint = self::createStub(ConstraintInterface::class);
+        $constraint->method('__invoke')->with('bar')->willReturn(new ValidationResult(new ValidationError('bar')));
 
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->bind($data)->willReturn(BindResult::fromValue('bar'));
-        $wrappedMapping->withPrefixAndRelativeKey('', 'foo')->will(function () use ($wrappedMapping) {
-            return $wrappedMapping->reveal();
-        });
+        $wrappedMapping = self::createStub(MappingInterface::class);
+        $wrappedMapping->method('bind')->with($data)->willReturn(BindResult::fromValue('bar'));
+        $wrappedMapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($wrappedMapping);
 
-        $mapping    = (new OptionalMapping($wrappedMapping->reveal()))->verifying(
-            $constraint->reveal()
-        )->withPrefixAndRelativeKey('', 'foo');
+        $mapping    = (new OptionalMapping($wrappedMapping))->verifying($constraint)->withPrefixAndRelativeKey('', 'foo');
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
         self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
@@ -132,38 +127,35 @@ class OptionalMappingTest extends TestCase
     #[Test]
     public function unbindNullValue(): void
     {
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->unbind(Argument::any())->shouldNotBeCalled();
+        $wrappedMapping = $this->createMock(MappingInterface::class);
+        $wrappedMapping->expects(self::never())->method('unbind');
 
-        $mapping = new OptionalMapping($wrappedMapping->reveal());
+        $mapping = new OptionalMapping($wrappedMapping);
         self::assertTrue($mapping->unbind(null)->isEmpty());
     }
 
     #[Test]
     public function unbindNotNullValue(): void
     {
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->unbind('foo')->willReturn(Data::fromFlatArray(['foo' => 'bar']));
+        $wrappedMapping = self::createStub(MappingInterface::class);
+        $wrappedMapping->method('unbind')->with('foo')->willReturn(Data::fromFlatArray(['foo' => 'bar']));
 
-        $mapping = new OptionalMapping($wrappedMapping->reveal());
+        $mapping = new OptionalMapping($wrappedMapping);
         self::assertSame('bar', $mapping->unbind('foo')->getValue('foo'));
     }
 
     #[Test]
     public function createPrefixedKey(): void
     {
-        $wrappedMapping = $this->prophesize(MappingInterface::class);
-        $wrappedMapping->withPrefixAndRelativeKey('foo', 'bar')->shouldBeCalled();
+        $wrappedMapping = $this->createMock(MappingInterface::class);
+        $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('foo', 'bar');
 
-        $mapping = (new OptionalMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('foo', 'bar');
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('foo', 'bar');
         $this->assertAttributeSame('foo[bar]', 'key', $mapping);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getInstanceForTraitTests(): MappingInterface
     {
-        return new OptionalMapping($this->prophesize(MappingInterface::class)->reveal());
+        return new OptionalMapping(self::createStub(MappingInterface::class));
     }
 }

@@ -16,7 +16,7 @@ use function preg_replace;
 
 trait MappingTrait
 {
-    /** @var ConstraintInterface[] */
+    /** @var list<ConstraintInterface> */
     private array $constraints = [];
 
     public function verifying(ConstraintInterface ...$constraints): MappingInterface
@@ -39,7 +39,7 @@ trait MappingTrait
         }
 
         return BindResult::fromFormErrors(...array_map(
-            function (ValidationError $validationError) use ($key) {
+            static function (ValidationError $validationError) use ($key) {
                 if ('' === $key) {
                     $finalKey = $validationError->getKeySuffix();
                 } elseif ('' === $validationError->getKeySuffix()) {

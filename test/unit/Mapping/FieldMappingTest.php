@@ -14,6 +14,7 @@ use Formidable\Mapping\Formatter\FormatterInterface;
 use Formidable\Mapping\MappingInterface;
 use Formidable\Mapping\MappingTrait;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(FieldMapping::class), CoversClass(MappingTrait::class)]
@@ -27,10 +28,10 @@ class FieldMappingTest extends TestCase
         $data       = Data::fromFlatArray(['foo' => 'bar']);
         $bindResult = BindResult::fromFormErrors();
 
-        $binder = $this->prophesize(FormatterInterface::class);
-        $binder->bind('foo', $data)->willReturn($bindResult);
+        $binder = self::createStub(FormatterInterface::class);
+        $binder->method('bind')->with('foo', $data)->willReturn($bindResult);
 
-        $mapping = (new FieldMapping($binder->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new FieldMapping($binder))->withPrefixAndRelativeKey('', 'foo');
         self::assertSame($bindResult, $mapping->bind($data));
     }
 
@@ -39,10 +40,10 @@ class FieldMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $binder = $this->prophesize(FormatterInterface::class);
-        $binder->bind('foo', $data)->willReturn(BindResult::fromValue('bar'));
+        $binder = self::createStub(FormatterInterface::class);
+        $binder->method('bind')->with('foo', $data)->willReturn(BindResult::fromValue('bar'));
 
-        $mapping    = (new FieldMapping($binder->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping    = (new FieldMapping($binder))->withPrefixAndRelativeKey('', 'foo');
         $bindResult = $mapping->bind($data);
         self::assertTrue($bindResult->isSuccess());
         self::assertSame('bar', $bindResult->getValue());
@@ -53,14 +54,14 @@ class FieldMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $binder = $this->prophesize(FormatterInterface::class);
-        $binder->bind('foo', $data)->willReturn(BindResult::fromValue('bar'));
+        $binder = self::createStub(FormatterInterface::class);
+        $binder->method('bind')->with('foo', $data)->willReturn(BindResult::fromValue('bar'));
 
-        $constraint = $this->prophesize(ConstraintInterface::class);
-        $constraint->__invoke('bar')->willReturn(new ValidationResult(new ValidationError('bar')));
+        $constraint = self::createStub(ConstraintInterface::class);
+        $constraint->method('__invoke')->with('bar')->willReturn(new ValidationResult(new ValidationError('bar')));
 
-        $mapping    = (new FieldMapping($binder->reveal()))->withPrefixAndRelativeKey('', 'foo')->verifying(
-            $constraint->reveal()
+        $mapping    = (new FieldMapping($binder))->withPrefixAndRelativeKey('', 'foo')->verifying(
+            $constraint
         );
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
@@ -73,27 +74,22 @@ class FieldMappingTest extends TestCase
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
-        $binder = $this->prophesize(FormatterInterface::class);
-        $binder->unbind('foo', 'bar')->willReturn($data);
+        $binder = self::createStub(FormatterInterface::class);
+        $binder->method('unbind')->with('foo', 'bar')->willReturn($data);
 
-        $mapping = (new FieldMapping($binder->reveal()))->withPrefixAndRelativeKey('', 'foo');
+        $mapping = (new FieldMapping($binder))->withPrefixAndRelativeKey('', 'foo');
         self::assertSame($data, $mapping->unbind('bar'));
     }
 
     #[Test]
     public function createPrefixedKey(): void
     {
-        $binder = $this->prophesize(FormatterInterface::class);
-
-        $mapping = (new FieldMapping($binder->reveal()))->withPrefixAndRelativeKey('foo', 'bar');
+        $mapping = (new FieldMapping(self::createStub(FormatterInterface::class)))->withPrefixAndRelativeKey('foo', 'bar');
         $this->assertAttributeSame('foo[bar]', 'key', $mapping);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function getInstanceForTraitTests(): MappingInterface
     {
-        return new FieldMapping($this->prophesize(FormatterInterface::class)->reveal());
+        return new FieldMapping(self::createStub(FormatterInterface::class));
     }
 }
