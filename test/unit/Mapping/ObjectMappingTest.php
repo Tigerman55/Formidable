@@ -20,42 +20,45 @@ use Formidable\Mapping\Exception\NonExistentMappedClassException;
 use Formidable\Mapping\Exception\NonExistentUnapplyKeyException;
 use Formidable\Mapping\Exception\UnbindFailureException;
 use Formidable\Mapping\MappingInterface;
+use Formidable\Mapping\MappingTrait;
 use Formidable\Mapping\ObjectMapping;
-use Mapping\MappingTraitTestTrait;
-use Mapping\TestAsset\SimpleObject;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use stdClass;
+use Test\Unit\Mapping\TestAsset\SimpleObject;
 
 use function iterator_to_array;
 
-/**
- * @covers Formidable\Mapping\ObjectMapping
- * @covers Formidable\Mapping\MappingTrait
- */
+#[CoversClass(ObjectMapping::class), CoversClass(MappingTrait::class)]
 class ObjectMappingTest extends TestCase
 {
     use MappingTraitTestTrait;
 
-    public function testConstructionWithInvalidMappingKey()
+    #[Test]
+    public function constructionWithInvalidMappingKey(): void
     {
         $this->expectException(InvalidMappingKeyException::class);
-        return new ObjectMapping([1 => $this->prophesize(MappingInterface::class)->reveal()], stdClass::class);
+        new ObjectMapping([1 => $this->prophesize(MappingInterface::class)->reveal()], stdClass::class);
     }
 
-    public function testConstructionWithInvalidMapping()
+    #[Test]
+    public function constructionWithInvalidMapping(): void
     {
         $this->expectException(InvalidMappingException::class);
-        return new ObjectMapping(['foo' => 'bar'], stdClass::class);
+        new ObjectMapping(['foo' => 'bar'], stdClass::class);
     }
 
-    public function testConstructionWithNonExistentClassName()
+    #[Test]
+    public function constructionWithNonExistentClassName(): void
     {
         $this->expectException(NonExistentMappedClassException::class);
-        return new ObjectMapping([], 'FormidableTest\Mapping\NonExistentClassName');
+        new ObjectMapping([], 'FormidableTest\Mapping\NonExistentClassName');
     }
 
-    public function testWithMapping()
+    #[Test]
+    public function withMapping(): void
     {
         $fooMapping = $this->getMockedMapping('foo');
         $barMapping = $this->getMockedMapping('bar');
@@ -70,14 +73,16 @@ class ObjectMappingTest extends TestCase
         ], 'mappings', $objectMapping);
     }
 
-    public function testUnbindNonMatchingClass()
+    #[Test]
+    public function unbindNonMatchingClass(): void
     {
         $mapping = new ObjectMapping([], stdClass::class);
         $this->expectException(MappedClassMismatchException::class);
         $mapping->unbind('foo');
     }
 
-    public function testBindValidData()
+    #[Test]
+    public function bindValidData(): void
     {
         $data          = Data::fromFlatArray(['foo' => 'baz', 'bar' => 'bat']);
         $objectMapping = new ObjectMapping([
@@ -87,12 +92,13 @@ class ObjectMappingTest extends TestCase
 
         $bindResult = $objectMapping->bind($data);
         self::assertTrue($bindResult->isSuccess());
-        $this->assertInstanceOf(SimpleObject::class, $bindResult->getValue());
-        self::assertSame('baz', $bindResult->getValue()->getFoo());
-        self::assertSame('bat', $bindResult->getValue()->getBar());
+        self::assertInstanceOf(SimpleObject::class, $bindResult->getValue());
+        self::assertSame('baz', $bindResult->getValue()->foo);
+        self::assertSame('bat', $bindResult->getValue()->bar);
     }
 
-    public function testBindInvalidData()
+    #[Test]
+    public function bindInvalidData(): void
     {
         $data          = Data::fromFlatArray(['foo' => 'baz', 'bar' => 'bat']);
         $objectMapping = new ObjectMapping([
@@ -105,7 +111,8 @@ class ObjectMappingTest extends TestCase
         self::assertSame('bat', iterator_to_array($bindResult->getFormErrorSequence())[0]->getMessage());
     }
 
-    public function testExceptionOnBind()
+    #[Test]
+    public function exceptionOnBind(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -121,7 +128,8 @@ class ObjectMappingTest extends TestCase
         $objectMapping->bind($data);
     }
 
-    public function testBindAppliesConstraints()
+    #[Test]
+    public function bindAppliesConstraints(): void
     {
         $constraint = $this->prophesize(ConstraintInterface::class);
         $constraint->__invoke(Argument::type(SimpleObject::class))->willReturn(new ValidationResult(
@@ -141,7 +149,8 @@ class ObjectMappingTest extends TestCase
         self::assertSame('foo[bar]', $formError->getKey());
     }
 
-    public function testInvalidApplyReturnValue()
+    #[Test]
+    public function invalidApplyReturnValue(): void
     {
         $objectMapping = new ObjectMapping([], SimpleObject::class, function () {
             return null;
@@ -150,7 +159,8 @@ class ObjectMappingTest extends TestCase
         $objectMapping->bind(Data::none());
     }
 
-    public function testUnbindObject()
+    #[Test]
+    public function unbindObject(): void
     {
         $objectMapping = new ObjectMapping([
             'foo' => $this->getMockedMapping('foo', 'baz'),
@@ -162,7 +172,8 @@ class ObjectMappingTest extends TestCase
         self::assertSame('bat', $data->getValue('bar'));
     }
 
-    public function testUnbindObjectWithMissingProperty()
+    #[Test]
+    public function unbindObjectWithMissingProperty(): void
     {
         $objectMapping = new ObjectMapping([
             'foo'  => $this->getMockedMapping('foo', 'baz'),
@@ -174,7 +185,8 @@ class ObjectMappingTest extends TestCase
         $objectMapping->unbind(new SimpleObject('baz', 'bat'));
     }
 
-    public function testExceptionOnUnbind()
+    #[Test]
+    public function exceptionOnUnbind(): void
     {
         $mapping = $this->prophesize(MappingInterface::class);
         $mapping->unbind('bar')->willThrow(new Exception('test'));
@@ -188,7 +200,8 @@ class ObjectMappingTest extends TestCase
         $objectMapping->unbind(new SimpleObject('bar', ''));
     }
 
-    public function testInvalidUnapplyReturnValue()
+    #[Test]
+    public function invalidUnapplyReturnValue(): void
     {
         $objectMapping = new ObjectMapping([], SimpleObject::class, null, function () {
             return null;
@@ -197,13 +210,15 @@ class ObjectMappingTest extends TestCase
         $objectMapping->unbind(new SimpleObject('', ''));
     }
 
-    public function testCreatePrefixedKey()
+    #[Test]
+    public function createPrefixedKey(): void
     {
         $objectMapping = (new ObjectMapping([], stdClass::class))->withPrefixAndRelativeKey('foo', 'bar');
         $this->assertAttributeSame('foo[bar]', 'key', $objectMapping);
     }
 
-    public function testKeyCloneCreatesNewMapings()
+    #[Test]
+    public function keyCloneCreatesNewMapings(): void
     {
         $mapping = $this->prophesize(MappingInterface::class);
         $mapping->withPrefixAndRelativeKey('foo', 'bar')->shouldBeCalled()->willReturn($mapping->reveal());
@@ -226,7 +241,7 @@ class ObjectMappingTest extends TestCase
         string $key,
         ?string $value = null,
         ?Data $data = null,
-        $success = true
+        bool $success = true
     ): MappingInterface {
         $mapping = $this->prophesize(MappingInterface::class);
 

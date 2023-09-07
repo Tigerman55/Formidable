@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Exception;
 
 use Formidable\Exception\InvalidValueException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Exception\InvalidValueException
- */
+#[CoversClass(InvalidValueException::class)]
 class InvalidValueExceptionTest extends TestCase
 {
-    public function testFromArrayWithNonStringKeys()
+    #[Test]
+    public function fromArrayWithNonStringKeys(): void
     {
         self::assertSame(
             'Non-string value in array found',
@@ -20,7 +21,8 @@ class InvalidValueExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNestedKey()
+    #[Test]
+    public function fromNonNestedKey(): void
     {
         self::assertSame(
             'Expected string or array value, but "boolean" was provided',

@@ -6,22 +6,23 @@ namespace Test\Unit\Mapping\Constraint;
 
 use Formidable\Mapping\Constraint\EmailAddressConstraint;
 use Formidable\Mapping\Constraint\Exception\InvalidTypeException;
-use Mapping\Constraint\ValidationErrorAssertion;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\EmailAddressConstraint
- */
+#[CoversClass(EmailAddressConstraint::class)]
 class EmailAddressConstraintTest extends TestCase
 {
-    public function testAssertionWithInvalidValueType()
+    #[Test]
+    public function assertionWithInvalidValueType(): void
     {
         $constraint = new EmailAddressConstraint();
         $this->expectException(InvalidTypeException::class);
         $constraint(1);
     }
 
-    public function testFailureWithEmptyString()
+    #[Test]
+    public function failureWithEmptyString(): void
     {
         $constraint       = new EmailAddressConstraint();
         $validationResult = $constraint('');
@@ -29,7 +30,8 @@ class EmailAddressConstraintTest extends TestCase
         ValidationErrorAssertion::assertErrorMessages($this, $validationResult, ['error.email-address' => []]);
     }
 
-    public function testFailureWithInvalidEmailAddress()
+    #[Test]
+    public function failureWithInvalidEmailAddress(): void
     {
         $constraint       = new EmailAddressConstraint();
         $validationResult = $constraint('foobar');
@@ -37,7 +39,8 @@ class EmailAddressConstraintTest extends TestCase
         ValidationErrorAssertion::assertErrorMessages($this, $validationResult, ['error.email-address' => []]);
     }
 
-    public function testSuccessWithValidEmailAddress()
+    #[Test]
+    public function successWithValidEmailAddress(): void
     {
         $constraint       = new EmailAddressConstraint();
         $validationResult = $constraint('foo@bar.com');

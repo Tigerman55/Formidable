@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Test\Unit\FormError;
 
 use Formidable\FormError\FormErrorSequence;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class FormErrorAssertion
 {
@@ -13,13 +13,13 @@ class FormErrorAssertion
         TestCase $testCase,
         FormErrorSequence $formErrorSequence,
         array $expectedMessages
-    ) {
+    ): void {
         $actualMessages = [];
 
         foreach ($formErrorSequence as $formError) {
             $actualMessages[$formError->getKey()] = $formError->getMessage();
         }
 
-        $testCase->assertSame($expectedMessages, $actualMessages);
+        $testCase::assertSame($expectedMessages, $actualMessages);
     }
 }

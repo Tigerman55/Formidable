@@ -9,7 +9,8 @@ use Formidable\Mapping\MappingInterface;
 
 trait MappingTraitTestTrait
 {
-    public function testVerifyingReturnsNewInstanceWithNewConstraints()
+    #[Test]
+    public function verifyingReturnsNewInstanceWithNewConstraints(): void
     {
         $mappingA = $this->getInstanceForTraitTests();
         $mappingB = $mappingA->verifying($this->prophesize(ConstraintInterface::class)->reveal());

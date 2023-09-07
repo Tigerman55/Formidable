@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Exception;
 
 use Formidable\Exception\InvalidKeyException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Exception\InvalidKeyException
- */
+#[CoversClass(InvalidKeyException::class)]
 class InvalidKeyExceptionTest extends TestCase
 {
-    public function testFromArrayWithNonStringKeys()
+    #[Test]
+    public function fromArrayWithNonStringKeys(): void
     {
         self::assertSame(
             'Non-string key in array found',
@@ -20,7 +21,8 @@ class InvalidKeyExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNestedKey()
+    #[Test]
+    public function fromNonNestedKey(): void
     {
         self::assertSame(
             'Expected string or nested integer key, but "boolean" was provided',

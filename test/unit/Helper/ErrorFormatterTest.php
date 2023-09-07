@@ -6,17 +6,16 @@ namespace Test\Unit\Helper;
 
 use Formidable\Helper\ErrorFormatter;
 use Formidable\Helper\Exception\NonExistentMessageException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\ErrorFormatter
- */
+#[CoversClass(ErrorFormatter::class)]
 class ErrorFormatterTest extends TestCase
 {
-    /**
-     * @dataProvider builtInMessageProvider
-     */
-    public function testBuiltInMessages(string $key, string $expectedMessage, array $arguments = [])
+    #[Test, DataProvider('builtInMessageProvider')]
+    public function builtInMessages(string $key, string $expectedMessage, array $arguments = []): void
     {
         $errorFormatter = new ErrorFormatter();
         $message        = $errorFormatter($key, $arguments);
@@ -24,7 +23,7 @@ class ErrorFormatterTest extends TestCase
         self::assertSame($expectedMessage, $message);
     }
 
-    public function builtInMessageProvider()
+    public static function builtInMessageProvider(): array
     {
         return [
             'error.required'            => ['error.required', 'This field is required'],
@@ -53,19 +52,22 @@ class ErrorFormatterTest extends TestCase
         ];
     }
 
-    public function testOverrideBuiltInMessage()
+    #[Test]
+    public function overrideBuiltInMessage(): void
     {
         $errorFormatter = new ErrorFormatter(['error.required' => 'foo']);
         self::assertSame('foo', $errorFormatter('error.required'));
     }
 
-    public function testCustomMessage()
+    #[Test]
+    public function customMessage(): void
     {
         $errorFormatter = new ErrorFormatter(['error.foo' => 'bar']);
         self::assertSame('bar', $errorFormatter('error.foo'));
     }
 
-    public function testExceptionOnNonExistentMessage()
+    #[Test]
+    public function exceptionOnNonExistentMessage(): void
     {
         $errorFormatter = new ErrorFormatter();
         $this->expectException(NonExistentMessageException::class);

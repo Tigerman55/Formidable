@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Exception;
 
 use Formidable\Exception\NonExistentKeyException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Exception\NonExistentKeyException
- */
+#[CoversClass(NonExistentKeyException::class)]
 class NonExistentKeyExceptionTest extends TestCase
 {
-    public function testFromNonExistentKey()
+    #[Test]
+    public function fromNonExistentKey(): void
     {
         self::assertSame(
             'Non-existent key "foo" provided',

@@ -7,16 +7,17 @@ namespace Test\Unit\Helper;
 use Formidable\Data;
 use Formidable\Field;
 use Formidable\FormError\FormErrorSequence;
+use Formidable\Helper\AttributeTrait;
 use Formidable\Helper\Textarea;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\Textarea
- * @covers Formidable\Helper\AttributeTrait
- */
+#[CoversClass(Textarea::class), CoversClass(AttributeTrait::class)]
 class TextareaTest extends TestCase
 {
-    public function testDefaultTextarea()
+    #[Test]
+    public function defaultTextarea(): void
     {
         $helper = new Textarea();
         self::assertSame(
@@ -25,7 +26,8 @@ class TextareaTest extends TestCase
         );
     }
 
-    public function testEmptyTextarea()
+    #[Test]
+    public function emptyTextarea(): void
     {
         $helper = new Textarea();
         self::assertSame(
@@ -34,7 +36,8 @@ class TextareaTest extends TestCase
         );
     }
 
-    public function testCustomAttribute()
+    #[Test]
+    public function customAttribute(): void
     {
         $helper = new Textarea();
         self::assertSame(

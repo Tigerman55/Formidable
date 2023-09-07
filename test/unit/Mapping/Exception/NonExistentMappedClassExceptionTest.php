@@ -5,20 +5,18 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Exception;
 
 use Formidable\Mapping\Exception\NonExistentMappedClassException;
-use Formidable\Mapping\MappingInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-use function sprintf;
-
-/**
- * @covers Formidable\Mapping\Exception\NonExistentMappedClassException
- */
+#[CoversClass(NonExistentMappedClassException::class)]
 class NonExistentMappedClassExceptionTest extends TestCase
 {
-    public function testFromNonExistentClass()
+    #[Test]
+    public function fromNonExistentClass(): void
     {
         self::assertSame(
-            sprintf('Class with name foo does not exist', MappingInterface::class),
+            'Class with name foo does not exist',
             NonExistentMappedClassException::fromNonExistentClass('foo')->getMessage()
         );
     }

@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Exception;
 
 use Formidable\Exception\UnboundDataException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Exception\UnboundDataException
- */
+#[CoversClass(UnboundDataException::class)]
 class UnboundDataExceptionTest extends TestCase
 {
-    public function testFromGetValueAttempt()
+    #[Test]
+    public function fromGetValueAttempt(): void
     {
         self::assertSame(
             'No data have been bound to the form',

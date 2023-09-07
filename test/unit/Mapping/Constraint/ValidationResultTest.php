@@ -6,31 +6,34 @@ namespace Test\Unit\Mapping\Constraint;
 
 use Formidable\Mapping\Constraint\ValidationError;
 use Formidable\Mapping\Constraint\ValidationResult;
-use Mapping\Constraint\ValidationErrorAssertion;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\ValidationResult
- */
+#[CoversClass(ValidationResult::class)]
 class ValidationResultTest extends TestCase
 {
-    public function testSuccessWithoutErrors()
+    #[Test]
+    public function successWithoutErrors(): void
     {
         self::assertTrue((new ValidationResult())->isSuccess());
     }
 
-    public function testFailureWithErrors()
+    #[Test]
+    public function failureWithErrors(): void
     {
         self::assertFalse((new ValidationResult(new ValidationError('')))->isSuccess());
     }
 
-    public function testValidationErrorsRetrieval()
+    #[Test]
+    public function validationErrorsRetrieval(): void
     {
         $validationResult = new ValidationResult(new ValidationError('foo'), new ValidationError('bar'));
         ValidationErrorAssertion::assertErrorMessages($this, $validationResult, ['foo' => [], 'bar' => []]);
     }
 
-    public function testMerge()
+    #[Test]
+    public function merge(): void
     {
         $validationResultA = new ValidationResult(new ValidationError('foo'));
         $validationResultB = new ValidationResult();

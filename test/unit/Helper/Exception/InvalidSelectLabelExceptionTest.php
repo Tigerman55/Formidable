@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Helper\Exception;
 
 use Formidable\Helper\Exception\InvalidSelectLabelException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\Exception\InvalidSelectLabelException
- */
+#[CoversClass(InvalidSelectLabelException::class)]
 class InvalidSelectLabelExceptionTest extends TestCase
 {
-    public function testFromInvalidLabel()
+    #[Test]
+    public function fromInvalidLabel(): void
     {
         self::assertSame(
             'Label must either be a string or an array of child values, but got integer',

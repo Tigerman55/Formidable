@@ -6,25 +6,7 @@ namespace Test\Unit\Mapping\TestAsset;
 
 class SimpleObject
 {
-    /** @var string */
-    private $foo;
-
-    /** @var string */
-    private $bar;
-
-    public function __construct(string $foo, string $bar)
+    public function __construct(public readonly string $foo, public readonly string $bar)
     {
-        $this->foo = $foo;
-        $this->bar = $bar;
-    }
-
-    public function getFoo(): string
-    {
-        return $this->foo;
-    }
-
-    public function getBar(): string
-    {
-        return $this->bar;
     }
 }

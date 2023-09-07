@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Helper\Exception;
 
 use Formidable\Helper\Exception\NonExistentMessageException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\Exception\NonExistentMessageException
- */
+#[CoversClass(NonExistentMessageException::class)]
 class NonExistentMessageExceptionTest extends TestCase
 {
-    public function testFromNonExistentMessageKey()
+    #[Test]
+    public function fromNonExistentMessageKey(): void
     {
         self::assertSame(
             'Non-existent message key "foo" provided',

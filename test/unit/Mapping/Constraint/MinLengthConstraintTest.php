@@ -7,28 +7,30 @@ namespace Test\Unit\Mapping\Constraint;
 use Formidable\Mapping\Constraint\Exception\InvalidLengthException;
 use Formidable\Mapping\Constraint\Exception\InvalidTypeException;
 use Formidable\Mapping\Constraint\MinLengthConstraint;
-use Mapping\Constraint\ValidationErrorAssertion;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\MinLengthConstraint
- */
+#[CoversClass(MinLengthConstraint::class)]
 class MinLengthConstraintTest extends TestCase
 {
-    public function testAssertionWithInvalidLength()
+    #[Test]
+    public function assertionWithInvalidLength(): void
     {
         $this->expectException(InvalidLengthException::class);
         new MinLengthConstraint(-1);
     }
 
-    public function testAssertionWithInvalidValueType()
+    #[Test]
+    public function assertionWithInvalidValueType(): void
     {
         $constraint = new MinLengthConstraint(0);
         $this->expectException(InvalidTypeException::class);
         $constraint(1);
     }
 
-    public function testFailureWithEmptyString()
+    #[Test]
+    public function failureWithEmptyString(): void
     {
         $constraint       = new MinLengthConstraint(1);
         $validationResult = $constraint('');
@@ -40,7 +42,8 @@ class MinLengthConstraintTest extends TestCase
         );
     }
 
-    public function testFailureWithMultiByte()
+    #[Test]
+    public function failureWithMultiByte(): void
     {
         $constraint       = new MinLengthConstraint(2);
         $validationResult = $constraint('ü');
@@ -52,7 +55,8 @@ class MinLengthConstraintTest extends TestCase
         );
     }
 
-    public function testSuccessWithValidString()
+    #[Test]
+    public function successWithValidString(): void
     {
         $constraint       = new MinLengthConstraint(2);
         $validationResult = $constraint('ab');

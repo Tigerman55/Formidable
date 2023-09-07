@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Exception;
 
 use Exception;
+use Formidable\Mapping\Exception\NestedMappingExceptionTrait;
 use Formidable\Mapping\Exception\UnbindFailureException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Exception\UnbindFailureException
- * @covers Formidable\Mapping\Exception\NestedMappingExceptionTrait
- */
+#[CoversClass(UnbindFailureException::class), CoversClass(NestedMappingExceptionTrait::class)]
 class UnbindFailureExceptionTest extends TestCase
 {
-    public function testFromUnbindExceptionWithGenericException()
+    #[Test]
+    public function fromUnbindExceptionWithGenericException(): void
     {
         $previous  = new Exception('test');
         $exception = UnbindFailureException::fromUnbindException('foo', $previous);
@@ -26,7 +27,8 @@ class UnbindFailureExceptionTest extends TestCase
         self::assertSame($previous, $exception->getPrevious());
     }
 
-    public function testFromUnbindExceptionWithNestedBindFailureException()
+    #[Test]
+    public function fromUnbindExceptionWithNestedBindFailureException(): void
     {
         $previous  = UnbindFailureException::fromUnbindException(
             'bar',

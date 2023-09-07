@@ -6,17 +6,18 @@ namespace Test\Unit\Mapping\Exception;
 
 use Formidable\Mapping\Exception\InvalidMappingException;
 use Formidable\Mapping\MappingInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function sprintf;
 
-/**
- * @covers Formidable\Mapping\Exception\InvalidMappingException
- */
+#[CoversClass(InvalidMappingException::class)]
 class InvalidMappingExceptionTest extends TestCase
 {
-    public function testFromInvalidMappingWithObject()
+    #[Test]
+    public function fromInvalidMappingWithObject(): void
     {
         self::assertSame(
             sprintf('Mapping was expected to implement %s, but got stdClass', MappingInterface::class),
@@ -24,7 +25,8 @@ class InvalidMappingExceptionTest extends TestCase
         );
     }
 
-    public function testFromInvalidMappingWithScalar()
+    #[Test]
+    public function fromInvalidMappingWithScalar(): void
     {
         self::assertSame(
             sprintf('Mapping was expected to implement %s, but got boolean', MappingInterface::class),

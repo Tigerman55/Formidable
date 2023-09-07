@@ -7,15 +7,15 @@ namespace Test\Unit\Mapping\Constraint;
 use Formidable\Mapping\Constraint\Exception\InvalidLimitException;
 use Formidable\Mapping\Constraint\Exception\InvalidTypeException;
 use Formidable\Mapping\Constraint\MaxNumberConstraint;
-use Mapping\Constraint\ValidationErrorAssertion;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\MaxNumberConstraint
- */
-class MaNumberConstraintTest extends TestCase
+#[CoversClass(MaxNumberConstraint::class)]
+class MaxNumberConstraintTest extends TestCase
 {
-    public function validValueProvider(): array
+    public static function validValueProvider(): array
     {
         return [
             [0, 0],
@@ -27,19 +27,15 @@ class MaNumberConstraintTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider validValueProvider
-     * @param int|float|string $limit
-     * @param int|float|string $value
-     */
-    public function testValidValues($limit, $value)
+    #[Test, DataProvider('validValueProvider')]
+    public function validValues(int|float|string $limit, int|float|string $value): void
     {
         $constraint       = new MaxNumberConstraint($limit);
         $validationResult = $constraint($value);
         self::assertTrue($validationResult->isSuccess());
     }
 
-    public function invalidValueProvider(): array
+    public static function invalidValueProvider(): array
     {
         return [
             [0, 1],
@@ -48,12 +44,8 @@ class MaNumberConstraintTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider invalidValueProvider
-     * @param int|float|string $limit
-     * @param int|float|string $value
-     */
-    public function testInvalidValues($limit, $value)
+    #[Test, DataProvider('invalidValueProvider')]
+    public function invalidValues(int|float|string $limit, int|float|string $value): void
     {
         $constraint       = new MaxNumberConstraint($limit);
         $validationResult = $constraint($value);
@@ -65,13 +57,15 @@ class MaNumberConstraintTest extends TestCase
         );
     }
 
-    public function testAssertionWithInvalidLimitType()
+    #[Test]
+    public function assertionWithInvalidLimitType(): void
     {
         $this->expectException(InvalidLimitException::class);
         new MaxNumberConstraint('test');
     }
 
-    public function testAssertionWithNonNumericValueType()
+    #[Test]
+    public function assertionWithNonNumericValueType(): void
     {
         $constraint = new MaxNumberConstraint(0);
         $this->expectException(InvalidTypeException::class);

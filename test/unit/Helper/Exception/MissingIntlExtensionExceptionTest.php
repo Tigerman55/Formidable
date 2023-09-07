@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Helper\Exception;
 
 use Formidable\Helper\Exception\MissingIntlExtensionException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\Exception\MissingIntlExtensionException
- */
+#[CoversClass(MissingIntlExtensionException::class)]
 class MissingIntlExtensionExceptionTest extends TestCase
 {
-    public function testFromMissingExtension()
+    #[Test]
+    public function fromMissingExtension(): void
     {
         self::assertSame(
             'You must install the PHP intl extension for this helper to work',

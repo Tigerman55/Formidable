@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Exception;
 
 use Formidable\Mapping\Exception\InvalidUnapplyResultException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @covers Formidable\Mapping\Exception\InvalidUnapplyResultException
- */
+#[CoversClass(InvalidUnapplyResultException::class)]
 class InvalidUnapplyResultExceptionTest extends TestCase
 {
-    public function testFromInvalidUnapplyResult()
+    #[Test]
+    public function fromInvalidUnapplyResult(): void
     {
         self::assertSame(
             'Unapply was expected to return an array, but returned object',

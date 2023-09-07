@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Transformer;
 
 use Formidable\Transformer\TrimTransformer;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Transformer\TrimTransformer
- */
+#[CoversClass(TrimTransformer::class)]
 class TrimTransformerTest extends TestCase
 {
-    public function testTransform()
+    #[Test]
+    public function transform(): void
     {
         $transformer = new TrimTransformer();
         self::assertSame('foo', $transformer("\0\r\n foo\0\r\n ", ''));

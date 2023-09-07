@@ -6,11 +6,13 @@ namespace Test\Unit\Exception;
 
 use Formidable\Exception\InvalidDataException;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(InvalidDataException::class)]
 class InvalidDataExceptionTest extends TestCase
 {
+    #[Test]
     public function fromGetValueAttempt(): void
     {
         self::assertSame(

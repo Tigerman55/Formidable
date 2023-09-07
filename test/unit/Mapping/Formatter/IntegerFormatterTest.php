@@ -7,16 +7,17 @@ namespace Test\Unit\Mapping\Formatter;
 use Formidable\Data;
 use Formidable\Mapping\Formatter\Exception\InvalidTypeException;
 use Formidable\Mapping\Formatter\IntegerFormatter;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
 use function iterator_to_array;
 
-/**
- * @covers Formidable\Mapping\Formatter\IntegerFormatter
- */
+#[CoversClass(IntegerFormatter::class)]
 class IntegerFormatterTest extends TestCase
 {
-    public function testBindValidPositiveValue()
+    #[Test]
+    public function bindValidPositiveValue(): void
     {
         self::assertSame(42, (new IntegerFormatter())->bind(
             'foo',
@@ -24,7 +25,8 @@ class IntegerFormatterTest extends TestCase
         )->getValue());
     }
 
-    public function testBindValidNegativeValue()
+    #[Test]
+    public function bindValidNegativeValue(): void
     {
         self::assertSame(-42, (new IntegerFormatter())->bind(
             'foo',
@@ -32,52 +34,58 @@ class IntegerFormatterTest extends TestCase
         )->getValue());
     }
 
-    public function testBindInvalidFloatValue()
+    #[Test]
+    public function bindInvalidFloatValue(): void
     {
         $bindResult = (new IntegerFormatter())->bind('foo', Data::fromFlatArray(['foo' => '1.1']));
         self::assertFalse($bindResult->isSuccess());
-        $this->assertCount(1, $bindResult->getFormErrorSequence());
+        self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
         self::assertSame('foo', $error->getKey());
         self::assertSame('error.integer', $error->getMessage());
     }
 
-    public function testBindEmptyStringValue()
+    #[Test]
+    public function bindEmptyStringValue(): void
     {
         $bindResult = (new IntegerFormatter())->bind('foo', Data::fromFlatArray(['foo' => '']));
         self::assertFalse($bindResult->isSuccess());
-        $this->assertCount(1, $bindResult->getFormErrorSequence());
+        self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
         self::assertSame('foo', $error->getKey());
         self::assertSame('error.integer', $error->getMessage());
     }
 
-    public function testThrowErrorOnBindNonExistentKey()
+    #[Test]
+    public function throwErrorOnBindNonExistentKey(): void
     {
         $bindResult = (new IntegerFormatter())->bind('foo', Data::fromFlatArray([]));
         self::assertFalse($bindResult->isSuccess());
-        $this->assertCount(1, $bindResult->getFormErrorSequence());
+        self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
         self::assertSame('foo', $error->getKey());
         self::assertSame('error.required', $error->getMessage());
     }
 
-    public function testUnbindValidPositiveValue()
+    #[Test]
+    public function unbindValidPositiveValue(): void
     {
         $data = (new IntegerFormatter())->unbind('foo', 42);
         self::assertSame('42', $data->getValue('foo'));
     }
 
-    public function testUnbindValidNegativeValue()
+    #[Test]
+    public function unbindValidNegativeValue(): void
     {
         $data = (new IntegerFormatter())->unbind('foo', -42);
         self::assertSame('-42', $data->getValue('foo'));
     }
 
-    public function testUnbindInvalidFloatValue()
+    #[Test]
+    public function unbindInvalidFloatValue(): void
     {
         $this->expectException(InvalidTypeException::class);
         (new IntegerFormatter())->unbind('foo', 1.1);

@@ -6,14 +6,15 @@ namespace Test\Unit\Mapping\Formatter;
 
 use Formidable\Data;
 use Formidable\Mapping\Formatter\IgnoredFormatter;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Formatter\IgnoredFormatter
- */
+#[CoversClass(IgnoredFormatter::class)]
 class IgnoredFormatterTest extends TestCase
 {
-    public function testBindValue()
+    #[Test]
+    public function bindValue(): void
     {
         self::assertSame(
             'foo',
@@ -21,7 +22,8 @@ class IgnoredFormatterTest extends TestCase
         );
     }
 
-    public function testUnbindValue()
+    #[Test]
+    public function unbindValue(): void
     {
         $data = (new IgnoredFormatter('foo'))->unbind('foo', 'bar');
         self::assertTrue($data->isEmpty());

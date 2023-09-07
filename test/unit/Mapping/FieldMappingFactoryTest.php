@@ -19,33 +19,33 @@ use Formidable\Mapping\Formatter\IgnoredFormatter;
 use Formidable\Mapping\Formatter\IntegerFormatter;
 use Formidable\Mapping\Formatter\TextFormatter;
 use Formidable\Mapping\Formatter\TimeFormatter;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\FieldMappingFactory
- */
+#[CoversClass(FieldMappingFactory::class)]
 class FieldMappingFactoryTest extends TestCase
 {
-    public function testIgnoredFactory()
+    #[Test]
+    public function ignoredFactory(): void
     {
         $fieldMapping = FieldMappingFactory::ignored('foo');
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
-        $this->assertAttributeInstanceOf(IgnoredFormatter::class, 'binder', $fieldMapping);
-        $this->assertAttributeCount(0, 'constraints', $fieldMapping);
+        self::assertAttributeInstanceOf(IgnoredFormatter::class, 'binder', $fieldMapping);
+        self::assertAttributeCount(0, 'constraints', $fieldMapping);
     }
 
-    public function testTextFactoryWithoutConstraints()
+    #[Test]
+    public function textFactoryWithoutConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::text();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
     }
 
-    public function testTextFactoryWithConstraints()
+    #[Test]
+    public function textFactoryWithConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::text(1, 2, 'iso-8859-15');
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(2, 'constraints', $fieldMapping);
 
@@ -58,22 +58,24 @@ class FieldMappingFactoryTest extends TestCase
         $this->assertAttributeSame(2, 'lengthLimit', $constraints[1]);
     }
 
-    public function testNonEmptyTextFactoryWithoutConstraints()
+    #[Test]
+    public function nonEmptyTextFactoryWithoutConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::nonEmptyText();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(1, 'constraints', $fieldMapping);
 
         $constraints = self::readAttribute($fieldMapping, 'constraints');
 
-        $this->assertInstanceOf(NotEmptyConstraint::class, $constraints[0]);
+        self::assertInstanceOf(NotEmptyConstraint::class, $constraints[0]);
     }
 
-    public function testNonEmptyTextFactoryWithConstraints()
+    #[Test]
+    public function nonEmptyTextFactoryWithConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::nonEmptyText(1, 2, 'iso-8859-15');
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(3, 'constraints', $fieldMapping);
 
@@ -85,39 +87,43 @@ class FieldMappingFactoryTest extends TestCase
         $this->assertAttributeSame('iso-8859-15', 'encoding', $constraints[1]);
         $this->assertAttributeSame(2, 'lengthLimit', $constraints[1]);
 
-        $this->assertInstanceOf(NotEmptyConstraint::class, $constraints[2]);
+        self::assertInstanceOf(NotEmptyConstraint::class, $constraints[2]);
     }
 
-    public function testEmailAddressFactory()
+    #[Test]
+    public function emailAddressFactory(): void
     {
         $fieldMapping = FieldMappingFactory::emailAddress();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(1, 'constraints', $fieldMapping);
-        $this->assertInstanceOf(EmailAddressConstraint::class, self::readAttribute($fieldMapping, 'constraints')[0]);
+        self::assertInstanceOf(EmailAddressConstraint::class, self::readAttribute($fieldMapping, 'constraints')[0]);
     }
 
-    public function testUrlFactory()
+    #[Test]
+    public function urlFactory(): void
     {
         $fieldMapping = FieldMappingFactory::url();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(TextFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(1, 'constraints', $fieldMapping);
-        $this->assertInstanceOf(UrlConstraint::class, self::readAttribute($fieldMapping, 'constraints')[0]);
+        self::assertInstanceOf(UrlConstraint::class, self::readAttribute($fieldMapping, 'constraints')[0]);
     }
 
-    public function testIntegerFactoryWithoutConstraints()
+    #[Test]
+    public function integerFactoryWithoutConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::integer();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(IntegerFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
     }
 
-    public function testIntegerFactoryWithConstraints()
+    #[Test]
+    public function integerFactoryWithConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::integer(1, 3, 2);
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(IntegerFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(3, 'constraints', $fieldMapping);
 
@@ -129,18 +135,20 @@ class FieldMappingFactoryTest extends TestCase
         $this->assertAttributeEquals('1', 'base', $constraints[2]);
     }
 
-    public function testFloatFactoryWithoutConstraints()
+    #[Test]
+    public function floatFactoryWithoutConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::float();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(FloatFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
     }
 
-    public function testFloatFactoryWithConstraints()
+    #[Test]
+    public function floatFactoryWithConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::float(1.5, 3., 0.5);
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(FloatFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(3, 'constraints', $fieldMapping);
 
@@ -152,18 +160,20 @@ class FieldMappingFactoryTest extends TestCase
         $this->assertAttributeEquals('1.5', 'base', $constraints[2]);
     }
 
-    public function testDecimalFactoryWithoutConstraints()
+    #[Test]
+    public function decimalFactoryWithoutConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::decimal();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(DecimalFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
     }
 
-    public function testDecimalFactoryWithConstraints()
+    #[Test]
+    public function decimalFactoryWithConstraints(): void
     {
         $fieldMapping = FieldMappingFactory::decimal('1.5', '3', '0.5');
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(DecimalFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(3, 'constraints', $fieldMapping);
 
@@ -175,18 +185,20 @@ class FieldMappingFactoryTest extends TestCase
         $this->assertAttributeEquals('1.5', 'base', $constraints[2]);
     }
 
-    public function testBooleanFactory()
+    #[Test]
+    public function booleanFactory(): void
     {
         $fieldMapping = FieldMappingFactory::boolean();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(BooleanFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
     }
 
-    public function testDefaultTimeFactory()
+    #[Test]
+    public function defaultTimeFactory(): void
     {
         $fieldMapping = FieldMappingFactory::time();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(TimeFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
 
@@ -195,7 +207,8 @@ class FieldMappingFactoryTest extends TestCase
         self::assertSame('UTC', $timeZone->getName());
     }
 
-    public function testTimeFactoryWithOptions()
+    #[Test]
+    public function timeFactoryWithOptions(): void
     {
         $fieldMapping = FieldMappingFactory::time(new DateTimeZone('Europe/Berlin'));
         $formatter    = self::readAttribute($fieldMapping, 'binder');
@@ -203,10 +216,11 @@ class FieldMappingFactoryTest extends TestCase
         self::assertSame('Europe/Berlin', $timeZone->getName());
     }
 
-    public function testDateFactory()
+    #[Test]
+    public function dateFactory(): void
     {
         $fieldMapping = FieldMappingFactory::date();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(DateFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
 
@@ -215,7 +229,8 @@ class FieldMappingFactoryTest extends TestCase
         self::assertSame('UTC', $timeZone->getName());
     }
 
-    public function testDateFactoryWithOptions()
+    #[Test]
+    public function dateFactoryWithOptions(): void
     {
         $fieldMapping = FieldMappingFactory::date(new DateTimeZone('Europe/Berlin'));
         $formatter    = self::readAttribute($fieldMapping, 'binder');
@@ -223,10 +238,11 @@ class FieldMappingFactoryTest extends TestCase
         self::assertSame('Europe/Berlin', $timeZone->getName());
     }
 
-    public function testDateTimeFactory()
+    #[Test]
+    public function dateTimeFactory(): void
     {
         $fieldMapping = FieldMappingFactory::dateTime();
-        $this->assertInstanceOf(FieldMapping::class, $fieldMapping);
+        self::assertInstanceOf(FieldMapping::class, $fieldMapping);
         $this->assertAttributeInstanceOf(DateTimeFormatter::class, 'binder', $fieldMapping);
         $this->assertAttributeCount(0, 'constraints', $fieldMapping);
 
@@ -236,7 +252,8 @@ class FieldMappingFactoryTest extends TestCase
         $this->assertAttributeSame(false, 'localTime', $formatter);
     }
 
-    public function testDateTimeFactoryWithOptions()
+    #[Test]
+    public function dateTimeFactoryWithOptions(): void
     {
         $fieldMapping = FieldMappingFactory::dateTime(new DateTimeZone('Europe/Berlin'), true);
         $formatter    = self::readAttribute($fieldMapping, 'binder');

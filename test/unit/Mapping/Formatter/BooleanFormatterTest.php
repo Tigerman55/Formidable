@@ -7,54 +7,61 @@ namespace Test\Unit\Mapping\Formatter;
 use Formidable\Data;
 use Formidable\Mapping\Formatter\BooleanFormatter;
 use Formidable\Mapping\Formatter\Exception\InvalidTypeException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
 use function iterator_to_array;
 
-/**
- * @covers Formidable\Mapping\Formatter\BooleanFormatter
- */
+#[CoversClass(BooleanFormatter::class)]
 class BooleanFormatterTest extends TestCase
 {
-    public function testBindValidTrueValue()
+    #[Test]
+    public function bindValidTrueValue(): void
     {
         self::assertTrue((new BooleanFormatter())->bind('foo', Data::fromFlatArray(['foo' => 'true']))->getValue());
     }
 
-    public function testBindValidFalseValue()
+    #[Test]
+    public function bindValidFalseValue(): void
     {
         self::assertFalse((new BooleanFormatter())->bind('foo', Data::fromFlatArray(['foo' => 'false']))->getValue());
     }
 
-    public function testFallbackToFalseOnBindNonExistentKey()
+    #[Test]
+    public function fallbackToFalseOnBindNonExistentKey(): void
     {
         self::assertFalse((new BooleanFormatter())->bind('foo', Data::fromFlatArray([]))->getValue());
     }
 
-    public function testBindEmptyStringValue()
+    #[Test]
+    public function bindEmptyStringValue(): void
     {
         $bindResult = (new BooleanFormatter())->bind('foo', Data::fromFlatArray(['foo' => '']));
         self::assertFalse($bindResult->isSuccess());
-        $this->assertCount(1, $bindResult->getFormErrorSequence());
+        self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
         self::assertSame('foo', $error->getKey());
         self::assertSame('error.boolean', $error->getMessage());
     }
 
-    public function testUnbindValidTrueValue()
+    #[Test]
+    public function unbindValidTrueValue(): void
     {
         $data = (new BooleanFormatter())->unbind('foo', true);
         self::assertSame('true', $data->getValue('foo'));
     }
 
-    public function testUnbindValidFalseValue()
+    #[Test]
+    public function unbindValidFalseValue(): void
     {
         $data = (new BooleanFormatter())->unbind('foo', false);
         self::assertSame('false', $data->getValue('foo'));
     }
 
-    public function testUnbindInvalidStringValue()
+    #[Test]
+    public function unbindInvalidStringValue(): void
     {
         $this->expectException(InvalidTypeException::class);
         (new BooleanFormatter())->unbind('foo', 'false');

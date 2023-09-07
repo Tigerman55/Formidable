@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Helper\Exception;
 
 use Formidable\Helper\Exception\InvalidHtmlAttributeValueException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\Exception\InvalidHtmlAttributeValueException
- */
+#[CoversClass(InvalidHtmlAttributeValueException::class)]
 class InvalidHtmlAttributeValueExceptionTest extends TestCase
 {
-    public function testFromInvalidValue()
+    #[Test]
+    public function fromInvalidValue(): void
     {
         self::assertSame(
             'HTML attribute value must be of type string, but got integer',

@@ -12,19 +12,19 @@ use Formidable\Mapping\Constraint\ValidationError;
 use Formidable\Mapping\Constraint\ValidationResult;
 use Formidable\Mapping\Exception\InvalidTypeException;
 use Formidable\Mapping\MappingInterface;
+use Formidable\Mapping\MappingTrait;
 use Formidable\Mapping\RepeatedMapping;
-use Mapping\MappingTraitTestTrait;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\RepeatedMapping
- * @covers Formidable\Mapping\MappingTrait
- */
+#[CoversClass(RepeatedMapping::class), CoversClass(MappingTrait::class)]
 class RepeatedMappingTest extends TestCase
 {
     use MappingTraitTestTrait;
 
-    public function testBindValidArray()
+    #[Test]
+    public function bindValidArray(): void
     {
         $data = Data::fromNestedArray([
             'foo' => [
@@ -44,7 +44,8 @@ class RepeatedMappingTest extends TestCase
         self::assertSame(['baz'], $bindResult->getValue());
     }
 
-    public function testBindPartiallyValidArray()
+    #[Test]
+    public function bindPartiallyValidArray(): void
     {
         $data = Data::fromNestedArray([
             'foo' => [
@@ -70,7 +71,8 @@ class RepeatedMappingTest extends TestCase
         self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
     }
 
-    public function testBindAppliesConstraintsToValidResult()
+    #[Test]
+    public function bindAppliesConstraintsToValidResult(): void
     {
         $data = Data::fromNestedArray([
             'foo' => [
@@ -87,23 +89,26 @@ class RepeatedMappingTest extends TestCase
         $constraint = $this->prophesize(ConstraintInterface::class);
         $constraint->__invoke(['baz'])->willReturn(new ValidationResult(new ValidationError('bar', [], '0')));
 
-        $mapping    = (new RepeatedMapping($wrappedMapping->reveal()))->withPrefixAndRelativeKey('foo', 'bar')->verifying(
-            $constraint->reveal()
-        );
+        $mapping    = (new RepeatedMapping($wrappedMapping->reveal()))
+            ->withPrefixAndRelativeKey('foo', 'bar')->verifying(
+                $constraint->reveal()
+            );
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
         self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
         self::assertSame('foo[bar][0]', $bindResult->getFormErrorSequence()->getIterator()->current()->getKey());
     }
 
-    public function testUnbindInvalidValue()
+    #[Test]
+    public function unbindInvalidValue(): void
     {
         $mapping = new RepeatedMapping($this->prophesize(MappingInterface::class)->reveal());
         $this->expectException(InvalidTypeException::class);
         $mapping->unbind('test');
     }
 
-    public function testUnbindValidValues()
+    #[Test]
+    public function unbindValidValues(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
         $wrappedMapping->unbind('baz')->willReturn(Data::fromFlatArray(['foo[bar][0]' => 'baz']));
@@ -117,7 +122,8 @@ class RepeatedMappingTest extends TestCase
         self::assertSame('bat', $data->getValue('foo[bar][1]'));
     }
 
-    public function testCreatePrefixedKey()
+    #[Test]
+    public function createPrefixedKey(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
 

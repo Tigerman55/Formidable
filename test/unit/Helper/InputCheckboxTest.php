@@ -7,16 +7,17 @@ namespace Test\Unit\Helper;
 use Formidable\Data;
 use Formidable\Field;
 use Formidable\FormError\FormErrorSequence;
+use Formidable\Helper\AttributeTrait;
 use Formidable\Helper\InputCheckbox;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\InputCheckbox
- * @covers Formidable\Helper\AttributeTrait
- */
+#[CoversClass(InputCheckbox::class), CoversClass(AttributeTrait::class)]
 class InputCheckboxTest extends TestCase
 {
-    public function testDefaultInputWithEmptyValue()
+    #[Test]
+    public function defaultInputWithEmptyValue(): void
     {
         $helper = new InputCheckbox();
         self::assertSame(
@@ -25,7 +26,8 @@ class InputCheckboxTest extends TestCase
         );
     }
 
-    public function testDefaultInputWithTrueValue()
+    #[Test]
+    public function defaultInputWithTrueValue(): void
     {
         $helper = new InputCheckbox();
         self::assertSame(
@@ -34,7 +36,8 @@ class InputCheckboxTest extends TestCase
         );
     }
 
-    public function testCustomAttribute()
+    #[Test]
+    public function customAttribute(): void
     {
         $helper = new InputCheckbox();
         self::assertSame(

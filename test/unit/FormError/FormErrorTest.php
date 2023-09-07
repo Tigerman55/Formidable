@@ -5,24 +5,27 @@ declare(strict_types=1);
 namespace Test\Unit\FormError;
 
 use Formidable\FormError\FormError;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\FormError\FormError
- */
+#[CoversClass(FormError::class)]
 class FormErrorTest extends TestCase
 {
-    public function testKeyRetrieval()
+    #[Test]
+    public function keyRetrieval(): void
     {
         self::assertSame('foo', (new FormError('foo', ''))->getKey());
     }
 
-    public function testMessageRetrieval()
+    #[Test]
+    public function messageRetrieval(): void
     {
         self::assertSame('foo', (new FormError('', 'foo'))->getMessage());
     }
 
-    public function testArgumentsRetrieval()
+    #[Test]
+    public function argumentsRetrieval(): void
     {
         self::assertSame(['foo' => 'bar'], (new FormError('', '', ['foo' => 'bar']))->getArguments());
     }

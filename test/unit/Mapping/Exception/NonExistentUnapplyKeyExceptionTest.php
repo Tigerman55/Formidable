@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Exception;
 
 use Formidable\Mapping\Exception\NonExistentUnapplyKeyException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Exception\NonExistentUnapplyKeyException
- */
+#[CoversClass(NonExistentUnapplyKeyException::class)]
 class NonExistentUnapplyKeyExceptionTest extends TestCase
 {
-    public function testFromNonExistentUnapplyKey()
+    #[Test]
+    public function fromNonExistentUnapplyKey(): void
     {
         self::assertSame(
             'Key "foo" not found in array returned by unapply function',

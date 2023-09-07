@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Constraint\Exception;
 
 use Formidable\Mapping\Constraint\Exception\InvalidLengthException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\Exception\InvalidLengthException
- */
+#[CoversClass(InvalidLengthException::class)]
 class InvalidLengthExceptionTest extends TestCase
 {
-    public function testFromNegativeLength()
+    #[Test]
+    public function fromNegativeLength(): void
     {
         self::assertSame(
             'Length must be greater than or equal to zero, but got -1',

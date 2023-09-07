@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Constraint\Exception;
 
 use Formidable\Mapping\Constraint\Exception\InvalidTypeException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @covers Formidable\Mapping\Constraint\Exception\InvalidTypeException
- */
+#[CoversClass(InvalidTypeException::class)]
 class InvalidTypeExceptionTest extends TestCase
 {
-    public function testFromInvalidTypeWithObject()
+    #[Test]
+    public function fromInvalidTypeWithObject(): void
     {
         self::assertSame(
             'Value was expected to be of type foo, but got stdClass',
@@ -21,7 +22,8 @@ class InvalidTypeExceptionTest extends TestCase
         );
     }
 
-    public function testFromInvalidTypeWithScalar()
+    #[Test]
+    public function fromInvalidTypeWithScalar(): void
     {
         self::assertSame(
             'Value was expected to be of type foo, but got boolean',
@@ -29,7 +31,8 @@ class InvalidTypeExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNumericValueWithString()
+    #[Test]
+    public function fromNonNumericValueWithString(): void
     {
         self::assertSame(
             'Value was expected to be numeric, but got "test"',
@@ -37,7 +40,8 @@ class InvalidTypeExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNumericValueWithObject()
+    #[Test]
+    public function fromNonNumericValueWithObject(): void
     {
         self::assertSame(
             'Value was expected to be numeric, but got object',

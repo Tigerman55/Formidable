@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Constraint\Exception;
 
 use Formidable\Mapping\Constraint\Exception\MissingDecimalDependencyException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\Exception\MissingDecimalDependencyException
- */
+#[CoversClass(MissingDecimalDependencyException::class)]
 class MissingDecimalDependencyExceptionTest extends TestCase
 {
-    public function testFromMissingDependency()
+    #[Test]
+    public function fromMissingDependency(): void
     {
         self::assertSame(
             'You must composer require litipk/php-bignumbers for this constraint to work',

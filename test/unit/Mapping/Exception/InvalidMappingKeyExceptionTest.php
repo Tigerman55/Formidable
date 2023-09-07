@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Exception;
 
 use Formidable\Mapping\Exception\InvalidMappingKeyException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @covers Formidable\Mapping\Exception\InvalidMappingKeyException
- */
+#[CoversClass(InvalidMappingKeyException::class)]
 class InvalidMappingKeyExceptionTest extends TestCase
 {
-    public function testFromInvalidMappingKey()
+    #[Test]
+    public function fromInvalidMappingKey(): void
     {
         self::assertSame(
             'Mapping key must be of type string, but got object',

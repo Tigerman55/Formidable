@@ -4,40 +4,44 @@ declare(strict_types=1);
 
 namespace Test\Unit\FormError;
 
-use FormError\FormErrorAssertion;
 use Formidable\FormError\FormError;
 use Formidable\FormError\FormErrorSequence;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\FormError\FormErrorSequence
- */
+#[CoversClass(FormErrorSequence::class)]
 class FormErrorSequenceTest extends TestCase
 {
-    public function testIsEmptyReturnsTrueWithoutErrors()
+    #[Test]
+    public function isEmptyReturnsTrueWithoutErrors(): void
     {
         self::assertTrue((new FormErrorSequence())->isEmpty());
     }
 
-    public function testIsEmptyReturnsFalseWithErrors()
+    #[Test]
+    public function isEmptyReturnsFalseWithErrors(): void
     {
         self::assertFalse((new FormErrorSequence(new FormError('', '')))->isEmpty());
     }
 
-    public function testCountable()
+    #[Test]
+    public function countable(): void
     {
-        $this->assertCount(2, new FormErrorSequence(new FormError('', ''), new FormError('', '')));
+        self::assertCount(2, new FormErrorSequence(new FormError('', ''), new FormError('', '')));
     }
 
-    public function testIterator()
+    #[Test]
+    public function iterator(): void
     {
         $formErrorSequence = new FormErrorSequence(new FormError('foo', 'bar'), new FormError('baz', 'bat'));
         FormErrorAssertion::assertErrorMessages($this, $formErrorSequence, ['foo' => 'bar', 'baz' => 'bat']);
     }
 
-    public function testCollect()
+    #[Test]
+    public function collect(): void
     {
-        $this->assertCount(
+        self::assertCount(
             2,
             (new FormErrorSequence(
                 new FormError('foo', ''),
@@ -47,7 +51,8 @@ class FormErrorSequenceTest extends TestCase
         );
     }
 
-    public function testMerge()
+    #[Test]
+    public function merge(): void
     {
         $formErrorSequenceA = new FormErrorSequence(new FormError('foo', ''));
         $formErrorSequenceB = new FormErrorSequence(new FormError('bar', ''));
@@ -55,6 +60,6 @@ class FormErrorSequenceTest extends TestCase
 
         $this->assertNotSame($formErrorSequenceA, $formErrorSequenceC);
         $this->assertNotSame($formErrorSequenceB, $formErrorSequenceC);
-        $this->assertCount(2, $formErrorSequenceC);
+        self::assertCount(2, $formErrorSequenceC);
     }
 }

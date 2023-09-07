@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Constraint\Exception;
 
 use Formidable\Mapping\Constraint\Exception\InvalidLimitException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @covers Formidable\Mapping\Constraint\Exception\InvalidLimitException
- */
+#[CoversClass(InvalidLimitException::class)]
 class InvalidLimitExceptionTest extends TestCase
 {
-    public function testFromNonNumericValueWithString()
+    #[Test]
+    public function fromNonNumericValueWithString(): void
     {
         self::assertSame(
             'Limit was expected to be numeric, but got "test"',
@@ -21,7 +22,8 @@ class InvalidLimitExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNumericValueWithObject()
+    #[Test]
+    public function fromNonNumericValueWithObject(): void
     {
         self::assertSame(
             'Limit was expected to be numeric, but got object',

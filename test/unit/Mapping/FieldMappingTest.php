@@ -12,18 +12,17 @@ use Formidable\Mapping\Constraint\ValidationResult;
 use Formidable\Mapping\FieldMapping;
 use Formidable\Mapping\Formatter\FormatterInterface;
 use Formidable\Mapping\MappingInterface;
-use Mapping\MappingTraitTestTrait;
-use PHPUnit_Framework_TestCase as TestCase;
+use Formidable\Mapping\MappingTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\FieldMapping
- * @covers Formidable\Mapping\MappingTrait
- */
+#[CoversClass(FieldMapping::class), CoversClass(MappingTrait::class)]
 class FieldMappingTest extends TestCase
 {
     use MappingTraitTestTrait;
 
-    public function testBindReturnsFailureResult()
+    #[Test]
+    public function bindReturnsFailureResult(): void
     {
         $data       = Data::fromFlatArray(['foo' => 'bar']);
         $bindResult = BindResult::fromFormErrors();
@@ -35,7 +34,8 @@ class FieldMappingTest extends TestCase
         self::assertSame($bindResult, $mapping->bind($data));
     }
 
-    public function testBindReturnsSuccessResult()
+    #[Test]
+    public function bindReturnsSuccessResult(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -48,7 +48,8 @@ class FieldMappingTest extends TestCase
         self::assertSame('bar', $bindResult->getValue());
     }
 
-    public function testBindAppliesConstraints()
+    #[Test]
+    public function bindAppliesConstraints(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -67,7 +68,8 @@ class FieldMappingTest extends TestCase
         self::assertSame('foo', $bindResult->getFormErrorSequence()->getIterator()->current()->getKey());
     }
 
-    public function testUnbind()
+    #[Test]
+    public function unbind(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -78,7 +80,8 @@ class FieldMappingTest extends TestCase
         self::assertSame($data, $mapping->unbind('bar'));
     }
 
-    public function testCreatePrefixedKey()
+    #[Test]
+    public function createPrefixedKey(): void
     {
         $binder = $this->prophesize(FormatterInterface::class);
 

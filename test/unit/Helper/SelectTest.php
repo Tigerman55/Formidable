@@ -7,17 +7,18 @@ namespace Test\Unit\Helper;
 use Formidable\Data;
 use Formidable\Field;
 use Formidable\FormError\FormErrorSequence;
+use Formidable\Helper\AttributeTrait;
 use Formidable\Helper\Exception\InvalidSelectLabelException;
 use Formidable\Helper\Select;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\Select
- * @covers Formidable\Helper\AttributeTrait
- */
+#[CoversClass(Select::class), CoversClass(AttributeTrait::class)]
 class SelectTest extends TestCase
 {
-    public function testDefaultSelect()
+    #[Test]
+    public function defaultSelect(): void
     {
         $helper = new Select();
         self::assertSame(
@@ -29,11 +30,12 @@ class SelectTest extends TestCase
         );
     }
 
-    public function testIntegerKeys()
+    #[Test]
+    public function integerKeys(): void
     {
         $helper = new Select();
         self::assertSame(
-            "<select id=\"input.foo\" name=\"foo\"><option value=\"1\">bar</option>\n"
+            "<select id=\"input.foo\" name=\"foo\"><option value=\"1\">bar</option>"
             . "<option value=\"2\">baz</option></select>",
             $helper(
                 new Field('foo', '', new FormErrorSequence(), Data::none()),
@@ -42,7 +44,8 @@ class SelectTest extends TestCase
         );
     }
 
-    public function testSingleSelectedValue()
+    #[Test]
+    public function singleSelectedValue(): void
     {
         $helper = new Select();
         self::assertSame(
@@ -54,12 +57,13 @@ class SelectTest extends TestCase
         );
     }
 
-    public function testMultipleSelectedValues()
+    #[Test]
+    public function multipleSelectedValues(): void
     {
         $helper = new Select();
         self::assertSame(
-            "<select multiple id=\"input.foo\" name=\"foo[]\"><option value=\"foo\" selected>bar</option>\n"
-            . "<option value=\"baz\" selected>bat</option>\n"
+            "<select multiple id=\"input.foo\" name=\"foo[]\"><option value=\"foo\" selected>bar</option>"
+            . "<option value=\"baz\" selected>bat</option>"
             . "<option value=\"a\">b</option></select>",
             $helper(
                 new Field('foo', '', new FormErrorSequence(), Data::fromNestedArray([
@@ -74,11 +78,12 @@ class SelectTest extends TestCase
         );
     }
 
-    public function testOptGroups()
+    #[Test]
+    public function optGroups(): void
     {
         $helper = new Select();
         self::assertSame(
-            "<select id=\"input.foo\" name=\"foo\"><option value=\"foo\">bar</option>\n"
+            "<select id=\"input.foo\" name=\"foo\"><option value=\"foo\">bar</option>"
             . "<optgroup label=\"baz\"><option value=\"bat\">a</option></optgroup></select>",
             $helper(
                 new Field('foo', '', new FormErrorSequence(), Data::none()),
@@ -87,7 +92,8 @@ class SelectTest extends TestCase
         );
     }
 
-    public function testExceptionOnInvalidLabel()
+    #[Test]
+    public function exceptionOnInvalidLabel(): void
     {
         $helper = new Select();
         $this->expectException(InvalidSelectLabelException::class);

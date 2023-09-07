@@ -6,15 +6,16 @@ namespace Test\Unit\Mapping\Exception;
 
 use Exception;
 use Formidable\Mapping\Exception\BindFailureException;
-use PHPUnit_Framework_TestCase as TestCase;
+use Formidable\Mapping\Exception\NestedMappingExceptionTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Exception\BindFailureException
- * @covers Formidable\Mapping\Exception\NestedMappingExceptionTrait
- */
+#[CoversClass(BindFailureException::class), CoversClass(NestedMappingExceptionTrait::class)]
 class BindFailureExceptionTest extends TestCase
 {
-    public function testFromBindExceptionWithGenericException()
+    #[Test]
+    public function fromBindExceptionWithGenericException(): void
     {
         $previous  = new Exception('test');
         $exception = BindFailureException::fromBindException('foo', $previous);
@@ -26,7 +27,8 @@ class BindFailureExceptionTest extends TestCase
         self::assertSame($previous, $exception->getPrevious());
     }
 
-    public function testFromBindExceptionWithNestedBindFailureException()
+    #[Test]
+    public function fromBindExceptionWithNestedBindFailureException(): void
     {
         $previous  = BindFailureException::fromBindException(
             'bar',

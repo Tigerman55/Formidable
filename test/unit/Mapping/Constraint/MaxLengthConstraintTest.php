@@ -7,28 +7,30 @@ namespace Test\Unit\Mapping\Constraint;
 use Formidable\Mapping\Constraint\Exception\InvalidLengthException;
 use Formidable\Mapping\Constraint\Exception\InvalidTypeException;
 use Formidable\Mapping\Constraint\MaxLengthConstraint;
-use Mapping\Constraint\ValidationErrorAssertion;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\MaxLengthConstraint
- */
+#[CoversClass(MaxLengthConstraint::class)]
 class MaxLengthConstraintTest extends TestCase
 {
-    public function testAssertionWithInvalidLength()
+    #[Test]
+    public function assertionWithInvalidLength(): void
     {
         $this->expectException(InvalidLengthException::class);
         new MaxLengthConstraint(-1);
     }
 
-    public function testAssertionWithInvalidValueType()
+    #[Test]
+    public function assertionWithInvalidValueType(): void
     {
         $constraint = new MaxLengthConstraint(0);
         $this->expectException(InvalidTypeException::class);
         $constraint(1);
     }
 
-    public function testFailureWithEmptyString()
+    #[Test]
+    public function failureWithEmptyString(): void
     {
         $constraint       = new MaxLengthConstraint(1);
         $validationResult = $constraint('ab');
@@ -40,14 +42,16 @@ class MaxLengthConstraintTest extends TestCase
         );
     }
 
-    public function testSuccessWithMultiByte()
+    #[Test]
+    public function successWithMultiByte(): void
     {
         $constraint       = new MaxLengthConstraint(1);
         $validationResult = $constraint('ü');
         self::assertTrue($validationResult->isSuccess());
     }
 
-    public function testSuccessWithValidString()
+    #[Test]
+    public function successWithValidString(): void
     {
         $constraint       = new MaxLengthConstraint(2);
         $validationResult = $constraint('ab');

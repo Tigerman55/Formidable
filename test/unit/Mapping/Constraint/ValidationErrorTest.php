@@ -5,29 +5,33 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Constraint;
 
 use Formidable\Mapping\Constraint\ValidationError;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\ValidationError
- */
+#[CoversClass(ValidationError::class)]
 class ValidationErrorTest extends TestCase
 {
-    public function testMessageRetrieval()
+    #[Test]
+    public function messageRetrieval(): void
     {
         self::assertSame('foo', (new ValidationError('foo'))->getMessage());
     }
 
-    public function testArgumentsRetrieval()
+    #[Test]
+    public function argumentsRetrieval(): void
     {
         self::assertSame(['foo'], (new ValidationError('', ['foo']))->getArguments());
     }
 
-    public function testKeySuffixRetrieval()
+    #[Test]
+    public function keySuffixRetrieval(): void
     {
         self::assertSame('foo', (new ValidationError('', [], 'foo'))->getKeySuffix());
     }
 
-    public function testDefaults()
+    #[Test]
+    public function defaults(): void
     {
         $validationError = new ValidationError('');
         self::assertSame([], $validationError->getArguments());

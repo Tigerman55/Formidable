@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Test\Unit\Mapping;
 
-use FormError\FormErrorAssertion;
 use Formidable\FormError\FormError;
 use Formidable\FormError\FormErrorSequence;
 use Formidable\Mapping\BindResult;
 use Formidable\Mapping\Exception\InvalidBindResultException;
 use Formidable\Mapping\Exception\ValidBindResultException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use Test\Unit\FormError\FormErrorAssertion;
 
-/**
- * @covers Formidable\Mapping\BindResult
- */
+#[CoversClass(BindResult::class)]
 class BindResultTest extends TestCase
 {
-    public function testBindResultFromValue()
+    #[Test]
+    public function bindResultFromValue(): void
     {
         $bindResult = BindResult::fromValue('foo');
         self::assertTrue($bindResult->isSuccess());
@@ -26,7 +27,8 @@ class BindResultTest extends TestCase
         $bindResult->getFormErrorSequence();
     }
 
-    public function testBindResultFromFormErrors()
+    #[Test]
+    public function bindResultFromFormErrors(): void
     {
         $bindResult = BindResult::fromFormErrors(new FormError('foo', 'bar'));
         self::assertFalse($bindResult->isSuccess());
@@ -41,7 +43,8 @@ class BindResultTest extends TestCase
         $bindResult->getValue();
     }
 
-    public function testBindResultFromFormErrorSequence()
+    #[Test]
+    public function bindResultFromFormErrorSequence(): void
     {
         $bindResult = BindResult::fromFormErrorSequence(new FormErrorSequence(new FormError('foo', 'bar')));
         self::assertFalse($bindResult->isSuccess());

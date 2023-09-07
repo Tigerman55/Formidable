@@ -7,16 +7,17 @@ namespace Test\Unit\Helper;
 use Formidable\Data;
 use Formidable\Field;
 use Formidable\FormError\FormErrorSequence;
+use Formidable\Helper\AttributeTrait;
 use Formidable\Helper\InputText;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\InputText
- * @covers Formidable\Helper\AttributeTrait
- */
+#[CoversClass(InputText::class), CoversClass(AttributeTrait::class)]
 class InputTextTest extends TestCase
 {
-    public function testDefaultInput()
+    #[Test]
+    public function defaultInput(): void
     {
         $helper = new InputText();
         self::assertSame(
@@ -25,7 +26,8 @@ class InputTextTest extends TestCase
         );
     }
 
-    public function testCustomInputType()
+    #[Test]
+    public function customInputType(): void
     {
         $helper = new InputText();
         self::assertSame(
@@ -34,7 +36,8 @@ class InputTextTest extends TestCase
         );
     }
 
-    public function testCustomAttribute()
+    #[Test]
+    public function customAttribute(): void
     {
         $helper = new InputText();
         self::assertSame(

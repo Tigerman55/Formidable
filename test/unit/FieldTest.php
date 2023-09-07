@@ -8,47 +8,53 @@ use Formidable\Data;
 use Formidable\Field;
 use Formidable\FormError\FormError;
 use Formidable\FormError\FormErrorSequence;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Field
- */
+#[CoversClass(Field::class)]
 class FieldTest extends TestCase
 {
-    public function testKeyRetrieval()
+    #[Test]
+    public function keyRetrieval(): void
     {
         $field = new Field('foo', '', new FormErrorSequence(), Data::none());
         self::assertSame('foo', $field->getKey());
     }
 
-    public function testValueRetrieval()
+    #[Test]
+    public function valueRetrieval(): void
     {
         $field = new Field('', 'foo', new FormErrorSequence(), Data::none());
         self::assertSame('foo', $field->getValue());
     }
 
-    public function testErrorRetrieval()
+    #[Test]
+    public function errorRetrieval(): void
     {
         $errors = new FormErrorSequence();
         $field  = new Field('', '', $errors, Data::none());
         self::assertSame($errors, $field->getErrors());
     }
 
-    public function testHasErrorsReturnsFalseWithoutErrors()
+    #[Test]
+    public function hasErrorsReturnsFalseWithoutErrors(): void
     {
         $errors = new FormErrorSequence();
         $field  = new Field('', '', $errors, Data::none());
         self::assertFalse($field->hasErrors());
     }
 
-    public function testHasErrorsReturnsTrueWithErrors()
+    #[Test]
+    public function hasErrorsReturnsTrueWithErrors(): void
     {
         $errors = new FormErrorSequence(new FormError('', ''));
         $field  = new Field('', '', $errors, Data::none());
         self::assertTrue($field->hasErrors());
     }
 
-    public function testGetIndexes()
+    #[Test]
+    public function getIndexes(): void
     {
         $field = new Field('foo', '', new FormErrorSequence(), Data::fromFlatArray([
             'foo[0]'      => 'bar0',
@@ -59,7 +65,8 @@ class FieldTest extends TestCase
         self::assertSame(['0', '1', '2'], $field->getIndexes());
     }
 
-    public function testGetNestedValues()
+    #[Test]
+    public function getNestedValues(): void
     {
         $field = new Field('foo', '', new FormErrorSequence(), Data::fromFlatArray([
             'foo[0]'      => 'bar0',
@@ -70,7 +77,8 @@ class FieldTest extends TestCase
         self::assertSame(['bar0', 'bar1'], $field->getNestedValues());
     }
 
-    public function testGetNestedValuesPreserveKeys()
+    #[Test]
+    public function getNestedValuesPreserveKeys(): void
     {
         $field = new Field('foo', '', new FormErrorSequence(), Data::fromFlatArray([
             'foo[bar]'    => 'bar0',
@@ -84,7 +92,8 @@ class FieldTest extends TestCase
         ], $field->getNestedValues(true));
     }
 
-    public function testGetNestedValuesNoPreserveKeys()
+    #[Test]
+    public function getNestedValuesNoPreserveKeys(): void
     {
         $field = new Field('foo', '', new FormErrorSequence(), Data::fromFlatArray([
             'foo[bar]'    => 'bar0',

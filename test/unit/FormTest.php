@@ -11,19 +11,20 @@ use Formidable\Form;
 use Formidable\FormError\FormError;
 use Formidable\Mapping\BindResult;
 use Formidable\Mapping\MappingInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
 use function iterator_to_array;
 
-/**
- * @covers Formidable\Form
- */
+#[CoversClass(Form::class)]
 class FormTest extends TestCase
 {
-    public function testWithDefaults()
+    #[Test]
+    public function withDefaults(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -36,7 +37,8 @@ class FormTest extends TestCase
         self::assertSame('bar', $form->getField('foo')->getValue());
     }
 
-    public function testBindValidData()
+    #[Test]
+    public function bindValidData(): void
     {
         $data = Data::none();
 
@@ -49,7 +51,8 @@ class FormTest extends TestCase
         self::assertSame('foo', $form->getValue());
     }
 
-    public function testFill()
+    #[Test]
+    public function fill(): void
     {
         $mapping = $this->prophesize(MappingInterface::class);
         $mapping->unbind(['foo' => 'bar'])->willReturn(Data::fromFlatArray(['foo' => 'bar']))->shouldBeCalled();
@@ -58,7 +61,8 @@ class FormTest extends TestCase
         self::assertSame('bar', $form->getField('foo')->getValue());
     }
 
-    public function testBindInvalidData()
+    #[Test]
+    public function bindInvalidData(): void
     {
         $data = Data::none();
 
@@ -73,14 +77,16 @@ class FormTest extends TestCase
         $form->getValue();
     }
 
-    public function testExceptionOnGetValueWithoutBoundData()
+    #[Test]
+    public function exceptionOnGetValueWithoutBoundData(): void
     {
         $form = new Form($this->prophesize(MappingInterface::class)->reveal());
         $this->expectException(UnboundDataException::class);
         $form->getValue();
     }
 
-    public function testBindFromPostRequest()
+    #[Test]
+    public function bindFromPostRequest(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn('POST');
@@ -108,7 +114,8 @@ class FormTest extends TestCase
     /**
      * @dataProvider specialMethodProvider
      */
-    public function testBindFromPatchRequest(string $method)
+    #[Test]
+    public function bindFromPatchRequest(string $method)
     {
         $stream = $this->prophesize(StreamInterface::class);
         $stream->__toString()->willReturn('foo=bar');
@@ -128,7 +135,8 @@ class FormTest extends TestCase
         self::assertSame('bar', $form->getValue());
     }
 
-    public function testBindFromGetRequest()
+    #[Test]
+    public function bindFromGetRequest(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn('GET');
@@ -145,7 +153,8 @@ class FormTest extends TestCase
         self::assertSame('bar', $form->getValue());
     }
 
-    public function testBindFromRequestTrimsByDefault()
+    #[Test]
+    public function bindFromRequestTrimsByDefault(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn('GET');
@@ -159,7 +168,8 @@ class FormTest extends TestCase
         (new Form($mapping->reveal()))->bindFromRequest($request->reveal());
     }
 
-    public function testTrimForBindFromRequestCanBeDisabled()
+    #[Test]
+    public function trimForBindFromRequestCanBeDisabled(): void
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->getMethod()->willReturn('GET');
@@ -173,7 +183,8 @@ class FormTest extends TestCase
         (new Form($mapping->reveal()))->bindFromRequest($request->reveal(), false);
     }
 
-    public function testWithError()
+    #[Test]
+    public function withError(): void
     {
         $form = (
             new Form($this->prophesize(MappingInterface::class)->reveal())
@@ -183,7 +194,8 @@ class FormTest extends TestCase
         self::assertSame('foo', iterator_to_array($form->getErrors())[0]->getMessage());
     }
 
-    public function testWithGlobalError()
+    #[Test]
+    public function withGlobalError(): void
     {
         $form = (new Form($this->prophesize(MappingInterface::class)->reveal()))->withGlobalError('foo');
         self::assertTrue($form->hasErrors());
@@ -192,7 +204,8 @@ class FormTest extends TestCase
         self::assertSame('foo', iterator_to_array($form->getGlobalErrors())[0]->getMessage());
     }
 
-    public function testFieldRetrivalFromUnknownField()
+    #[Test]
+    public function fieldRetrivalFromUnknownField(): void
     {
         $form  = new Form($this->prophesize(MappingInterface::class)->reveal());
         $field = $form->getField('foo');

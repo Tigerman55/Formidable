@@ -6,19 +6,20 @@ namespace Test\Unit\Helper;
 
 use Formidable\FormError\FormError;
 use Formidable\FormError\FormErrorSequence;
+use Formidable\Helper\AttributeTrait;
 use Formidable\Helper\ErrorFormatter;
 use Formidable\Helper\ErrorList;
 use Formidable\Helper\Exception\InvalidHtmlAttributeKeyException;
 use Formidable\Helper\Exception\InvalidHtmlAttributeValueException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Helper\ErrorList
- * @covers Formidable\Helper\AttributeTrait
- */
+#[CoversClass(ErrorList::class), CoversClass(AttributeTrait::class)]
 class ErrorListTest extends TestCase
 {
-    public function testRenderEmptyErrorSequence()
+    #[Test]
+    public function renderEmptyErrorSequence(): void
     {
         $helper = new ErrorList(new ErrorFormatter());
         $html   = $helper(new FormErrorSequence());
@@ -26,10 +27,14 @@ class ErrorListTest extends TestCase
         self::assertSame('', $html);
     }
 
-    public function testRenderMultipleErrors()
+    #[Test]
+    public function renderMultipleErrors(): void
     {
         $helper = new ErrorList(new ErrorFormatter());
-        $html   = $helper(new FormErrorSequence(new FormError('', 'error.required'), new FormError('', 'error.integer')));
+        $html   = $helper(new FormErrorSequence(
+            new FormError('', 'error.required'),
+            new FormError('', 'error.integer')
+        ));
 
         $this->assertXmlStringEqualsXmlString(
             '<ul><li>This field is required</li><li>Integer value expected</li></ul>',
@@ -37,7 +42,8 @@ class ErrorListTest extends TestCase
         );
     }
 
-    public function testRenderWithCustomAttributes()
+    #[Test]
+    public function renderWithCustomAttributes(): void
     {
         $helper = new ErrorList(new ErrorFormatter());
         $html   = $helper(
@@ -51,7 +57,8 @@ class ErrorListTest extends TestCase
         );
     }
 
-    public function testExceptionOnInvalidAttributeKey()
+    #[Test]
+    public function exceptionOnInvalidAttributeKey(): void
     {
         $helper = new ErrorList(new ErrorFormatter());
         $this->expectException(InvalidHtmlAttributeKeyException::class);
@@ -61,7 +68,8 @@ class ErrorListTest extends TestCase
         );
     }
 
-    public function testExceptionOnInvalidAttributeValue()
+    #[Test]
+    public function exceptionOnInvalidAttributeValue(): void
     {
         $helper = new ErrorList(new ErrorFormatter());
         $this->expectException(InvalidHtmlAttributeValueException::class);

@@ -7,15 +7,15 @@ namespace Test\Unit\Mapping\Constraint;
 use Formidable\Mapping\Constraint\Exception\InvalidStepException;
 use Formidable\Mapping\Constraint\Exception\InvalidTypeException;
 use Formidable\Mapping\Constraint\StepNumberConstraint;
-use Mapping\Constraint\ValidationErrorAssertion;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 
-/**
- * @covers Formidable\Mapping\Constraint\StepNumberConstraint
- */
+#[CoversClass(StepNumberConstraint::class)]
 class StepNumberConstraintTest extends TestCase
 {
-    public function validStepProvider(): array
+    public static function validStepProvider(): array
     {
         return [
             // Integers
@@ -38,19 +38,14 @@ class StepNumberConstraintTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider validStepProvider
-     * @param int|float|string $step
-     * @param int|float|string|null $base
-     * @param int|float|string $value
-     */
-    public function testValidSteps($step, $base, $value)
+    #[Test, DataProvider('validStepProvider')]
+    public function validSteps(int|float|string $step, int|float|string|null $base, int|float|string $value): void
     {
         $constraint = new StepNumberConstraint($step, $base);
         self::assertTrue($constraint($value)->isSuccess());
     }
 
-    public function invalidStepProvider(): array
+    public static function invalidStepProvider(): array
     {
         return [
             // Integers
@@ -69,14 +64,14 @@ class StepNumberConstraintTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider invalidStepProvider
-     * @param int|float|string $step
-     * @param int|float|string|null $base
-     * @param int|float|string $value
-     */
-    public function testInvalidSteps($step, $base, $value, string $lowValue, string $highValue)
-    {
+    #[Test, DataProvider('invalidStepProvider')]
+    public function invalidSteps(
+        int|float|string $step,
+        int|float|string|null $base,
+        int|float|string $value,
+        string $lowValue,
+        string $highValue
+    ): void {
         $constraint       = new StepNumberConstraint($step, $base);
         $validationResult = $constraint($value);
         self::assertFalse($validationResult->isSuccess());
@@ -87,55 +82,64 @@ class StepNumberConstraintTest extends TestCase
         );
     }
 
-    public function testAssertionWithNegativeIntegerStep()
+    #[Test]
+    public function assertionWithNegativeIntegerStep(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint(-1);
     }
 
-    public function testAssertionWithZeroIntegerStep()
+    #[Test]
+    public function assertionWithZeroIntegerStep(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint(0);
     }
 
-    public function testAssertionWithNegativeFloatStep()
+    #[Test]
+    public function assertionWithNegativeFloatStep(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint(-1.);
     }
 
-    public function testAssertionWithZeroFloatStep()
+    #[Test]
+    public function assertionWithZeroFloatStep(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint(0.);
     }
 
-    public function testAssertionWithNegativeDecimalStep()
+    #[Test]
+    public function assertionWithNegativeDecimalStep(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint('-1');
     }
 
-    public function testAssertionWithZeroDecimalStep()
+    #[Test]
+    public function assertionWithZeroDecimalStep(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint('0');
     }
 
-    public function testAssertionWithNonNumericStep()
+    #[Test]
+    public function assertionWithNonNumericStep(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint('test');
     }
 
-    public function testAssertionWithNonNumericBase()
+    #[Test]
+    public function assertionWithNonNumericBase(): void
     {
         $this->expectException(InvalidStepException::class);
         new StepNumberConstraint(1, 'test');
     }
 
-    public function testAssertionWithNonNumericValue()
+    #[Test]
+    public function assertionWithNonNumericValue(): void
     {
         $constraint = new StepNumberConstraint(1);
         $this->expectException(InvalidTypeException::class);

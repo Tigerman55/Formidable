@@ -6,15 +6,16 @@ namespace Test\Unit\Mapping\Constraint\Exception;
 
 use Formidable\Mapping\Constraint\Exception\InvalidStepException;
 use Litipk\BigNumbers\Decimal;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @covers Formidable\Mapping\Constraint\Exception\InvalidStepException
- */
+#[CoversClass(InvalidStepException::class)]
 class InvalidStepExceptionTest extends TestCase
 {
-    public function testFromNonNumericStepWithString()
+    #[Test]
+    public function fromNonNumericStepWithString(): void
     {
         self::assertSame(
             'Step was expected to be numeric, but got "test"',
@@ -22,7 +23,8 @@ class InvalidStepExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNumericStepWithObject()
+    #[Test]
+    public function fromNonNumericStepWithObject(): void
     {
         self::assertSame(
             'Step was expected to be numeric, but got object',
@@ -30,7 +32,8 @@ class InvalidStepExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNumericBaseWithString()
+    #[Test]
+    public function fromNonNumericBaseWithString(): void
     {
         self::assertSame(
             'Base was expected to be numeric, but got "test"',
@@ -38,7 +41,8 @@ class InvalidStepExceptionTest extends TestCase
         );
     }
 
-    public function testFromNonNumericBaseWithObject()
+    #[Test]
+    public function fromNonNumericBaseWithObject(): void
     {
         self::assertSame(
             'Base was expected to be numeric, but got object',
@@ -46,7 +50,8 @@ class InvalidStepExceptionTest extends TestCase
         );
     }
 
-    public function testFromZeroOrNegativeStep()
+    #[Test]
+    public function fromZeroOrNegativeStep(): void
     {
         self::assertSame(
             'Step must be greater than zero, but got 0',

@@ -11,20 +11,20 @@ use Formidable\Mapping\Constraint\ConstraintInterface;
 use Formidable\Mapping\Constraint\ValidationError;
 use Formidable\Mapping\Constraint\ValidationResult;
 use Formidable\Mapping\MappingInterface;
+use Formidable\Mapping\MappingTrait;
 use Formidable\Mapping\OptionalMapping;
-use Mapping\MappingTraitTestTrait;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
-/**
- * @covers Formidable\Mapping\OptionalMapping
- * @covers Formidable\Mapping\MappingTrait
- */
+#[CoversClass(OptionalMapping::class), CoversClass(MappingTrait::class)]
 class OptionalMappingTest extends TestCase
 {
     use MappingTraitTestTrait;
 
-    public function testBindNonExistentSingleValue()
+    #[Test]
+    public function bindNonExistentSingleValue(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
         $wrappedMapping->bind(Argument::any())->shouldNotBeCalled();
@@ -34,7 +34,8 @@ class OptionalMappingTest extends TestCase
         $this->assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
     }
 
-    public function testBindEmptySingleValue()
+    #[Test]
+    public function bindEmptySingleValue(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
         $wrappedMapping->bind(Argument::any())->shouldNotBeCalled();
@@ -44,7 +45,8 @@ class OptionalMappingTest extends TestCase
         $this->assertNull($mapping->bind(Data::fromFlatArray(['foo' => '']))->getValue());
     }
 
-    public function testBindNonEmptySingleValue()
+    #[Test]
+    public function bindNonEmptySingleValue(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -56,7 +58,8 @@ class OptionalMappingTest extends TestCase
         self::assertSame('bar', $mapping->bind($data)->getValue());
     }
 
-    public function testBindFullyEmptyMultiValue()
+    #[Test]
+    public function bindFullyEmptyMultiValue(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
         $wrappedMapping->bind(Argument::any())->shouldNotBeCalled();
@@ -66,7 +69,8 @@ class OptionalMappingTest extends TestCase
         $this->assertNull($mapping->bind(Data::fromFlatArray(['foo[bar]' => '', 'foo[baz]' => '']))->getValue());
     }
 
-    public function testBindPartiallyEmptyMultiValue()
+    #[Test]
+    public function bindPartiallyEmptyMultiValue(): void
     {
         $data = Data::fromFlatArray(['foo[bar]' => '', 'foo[baz]' => 'bat']);
 
@@ -78,7 +82,8 @@ class OptionalMappingTest extends TestCase
         self::assertSame(['bar' => '', 'baz' => 'bat'], $mapping->bind($data)->getValue());
     }
 
-    public function testBindInvalidValue()
+    #[Test]
+    public function bindInvalidValue(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -90,7 +95,8 @@ class OptionalMappingTest extends TestCase
         self::assertSame('bar', $mapping->bind($data)->getFormErrorSequence()->getIterator()->current()->getMessage());
     }
 
-    public function testConstraintIsAppliedToNullReturn()
+    #[Test]
+    public function constraintIsAppliedToNullReturn(): void
     {
         $constraint = $this->prophesize(ConstraintInterface::class);
         $constraint->__invoke(null)->willReturn(new ValidationResult())->shouldBeCalled();
@@ -101,7 +107,8 @@ class OptionalMappingTest extends TestCase
         $this->assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
     }
 
-    public function testConstraintIsAppliedToValueReturn()
+    #[Test]
+    public function constraintIsAppliedToValueReturn(): void
     {
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
@@ -122,7 +129,8 @@ class OptionalMappingTest extends TestCase
         self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
     }
 
-    public function testUnbindNullValue()
+    #[Test]
+    public function unbindNullValue(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
         $wrappedMapping->unbind(Argument::any())->shouldNotBeCalled();
@@ -131,7 +139,8 @@ class OptionalMappingTest extends TestCase
         self::assertTrue($mapping->unbind(null)->isEmpty());
     }
 
-    public function testUnbindNotNullValue()
+    #[Test]
+    public function unbindNotNullValue(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
         $wrappedMapping->unbind('foo')->willReturn(Data::fromFlatArray(['foo' => 'bar']));
@@ -140,7 +149,8 @@ class OptionalMappingTest extends TestCase
         self::assertSame('bar', $mapping->unbind('foo')->getValue('foo'));
     }
 
-    public function testCreatePrefixedKey()
+    #[Test]
+    public function createPrefixedKey(): void
     {
         $wrappedMapping = $this->prophesize(MappingInterface::class);
         $wrappedMapping->withPrefixAndRelativeKey('foo', 'bar')->shouldBeCalled();

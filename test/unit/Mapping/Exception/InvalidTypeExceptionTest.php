@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Test\Unit\Mapping\Exception;
 
 use Formidable\Mapping\Exception\InvalidTypeException;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
-/**
- * @covers Formidable\Mapping\Exception\InvalidTypeException
- */
+#[CoversClass(InvalidTypeException::class)]
 class InvalidTypeExceptionTest extends TestCase
 {
-    public function testFromInvalidTypeWithObject()
+    #[Test]
+    public function fromInvalidTypeWithObject(): void
     {
         self::assertSame(
             'Value was expected to be of type foo, but got stdClass',
@@ -21,7 +22,8 @@ class InvalidTypeExceptionTest extends TestCase
         );
     }
 
-    public function testFromInvalidTypeWithScalar()
+    #[Test]
+    public function fromInvalidTypeWithScalar(): void
     {
         self::assertSame(
             'Value was expected to be of type foo, but got boolean',
