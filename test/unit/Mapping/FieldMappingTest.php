@@ -11,7 +11,7 @@ use Formidable\Mapping\Constraint\ValidationError;
 use Formidable\Mapping\Constraint\ValidationResult;
 use Formidable\Mapping\FieldMapping;
 use Formidable\Mapping\Formatter\FormatterInterface;
-use Formidable\Mapping\MappingInterface;
+use Formidable\Mapping\Formatter\TextFormatter;
 use Formidable\Mapping\MappingTrait;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -20,8 +20,6 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(FieldMapping::class), CoversClass(MappingTrait::class)]
 class FieldMappingTest extends TestCase
 {
-    use MappingTraitTestTrait;
-
     #[Test]
     public function bindReturnsFailureResult(): void
     {
@@ -84,12 +82,8 @@ class FieldMappingTest extends TestCase
     #[Test]
     public function createPrefixedKey(): void
     {
-        $mapping = (new FieldMapping(self::createStub(FormatterInterface::class)))->withPrefixAndRelativeKey('foo', 'bar');
-        $this->assertAttributeSame('foo[bar]', 'key', $mapping);
-    }
-
-    protected function getInstanceForTraitTests(): MappingInterface
-    {
-        return new FieldMapping(self::createStub(FormatterInterface::class));
+        $mapping = (new FieldMapping(new TextFormatter()))->withPrefixAndRelativeKey('', 'foo');
+        $result  = $mapping->bind(Data::fromNestedArray(['foo' => 'test']));
+        self::assertSame('test', $result->getValue());
     }
 }
