@@ -20,8 +20,6 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(OptionalMapping::class), CoversClass(MappingTrait::class)]
 class OptionalMappingTest extends TestCase
 {
-    use MappingTraitTestTrait;
-
     #[Test]
     public function bindNonExistentSingleValue(): void
     {
@@ -87,7 +85,8 @@ class OptionalMappingTest extends TestCase
         $data = Data::fromFlatArray(['foo' => 'bar']);
 
         $wrappedMapping = self::createStub(MappingInterface::class);
-        $wrappedMapping->method('bind')->with($data)->willReturn(BindResult::fromFormErrors(new FormError('foo', 'bar')));
+        $wrappedMapping->method('bind')->with($data)
+            ->willReturn(BindResult::fromFormErrors(new FormError('foo', 'bar')));
         $wrappedMapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($wrappedMapping);
 
         $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
@@ -118,7 +117,8 @@ class OptionalMappingTest extends TestCase
         $wrappedMapping->method('bind')->with($data)->willReturn(BindResult::fromValue('bar'));
         $wrappedMapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($wrappedMapping);
 
-        $mapping    = (new OptionalMapping($wrappedMapping))->verifying($constraint)->withPrefixAndRelativeKey('', 'foo');
+        $mapping    = (new OptionalMapping($wrappedMapping))->verifying($constraint)
+            ->withPrefixAndRelativeKey('', 'foo');
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
         self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
@@ -147,11 +147,13 @@ class OptionalMappingTest extends TestCase
     #[Test]
     public function createPrefixedKey(): void
     {
-        $wrappedMapping = $this->createMock(MappingInterface::class);
-        $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('foo', 'bar');
+        $wrappedMapping = self::createStub(MappingInterface::class);
+        $wrappedMapping->method('bind')->willReturn(BindResult::fromValue('test'));
+        $wrappedMapping->method('withPrefixAndRelativeKey')->willReturn($wrappedMapping);
 
-        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('foo', 'bar');
-        $this->assertAttributeSame('foo[bar]', 'key', $mapping);
+        $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
+        $result  = $mapping->bind(Data::fromNestedArray(['foo' => 'test']));
+        self::assertSame('test', $result->getValue());
     }
 
     protected function getInstanceForTraitTests(): MappingInterface

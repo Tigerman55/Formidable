@@ -27,15 +27,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Test\Unit\Mapping\TestAsset\SimpleObject;
+use Test\Unit\Mapping\TestAsset\DTOWithObjectMapping;
+use Test\Unit\Mapping\TestAsset\SimpleDTO;
 
 use function iterator_to_array;
 
 #[CoversClass(ObjectMapping::class), CoversClass(MappingTrait::class)]
 class ObjectMappingTest extends TestCase
 {
-    use MappingTraitTestTrait;
-
     #[Test]
     public function constructionWithInvalidMappingKey(): void
     {
@@ -60,17 +59,21 @@ class ObjectMappingTest extends TestCase
     #[Test]
     public function withMapping(): void
     {
-        $fooMapping = $this->getMockedMapping('foo');
-        $barMapping = $this->getMockedMapping('bar');
+        $fooFieldMapping = self::createStub(MappingInterface::class);
+        $fooFieldMapping->method('bind')->willReturn(BindResult::fromValue('test1'));
+        $fooFieldMapping->method('withPrefixAndRelativeKey')->willReturn($fooFieldMapping);
+
+        $barFieldMapping = self::createStub(MappingInterface::class);
+        $barFieldMapping->method('bind')->willReturn(BindResult::fromValue('test2'));
+        $barFieldMapping->method('withPrefixAndRelativeKey')->willReturn($barFieldMapping);
 
         $objectMapping = (new ObjectMapping([
-            'foo' => $fooMapping,
-        ], SimpleObject::class))->withMapping('bar', $barMapping);
-
-        $this->assertAttributeSame([
-            'foo' => $fooMapping,
-            'bar' => $barMapping,
-        ], 'mappings', $objectMapping);
+            'foo' => $fooFieldMapping,
+        ], SimpleDTO::class))->withMapping('bar', $barFieldMapping);
+        $simpleObject  = $objectMapping->bind(Data::fromNestedArray(['foo' => 'test1', 'bar' => 'test2']))->getValue();
+        self::assertInstanceOf(SimpleDTO::class, $simpleObject);
+        self::assertSame('test1', $simpleObject->foo);
+        self::assertSame('test2', $simpleObject->bar);
     }
 
     #[Test]
@@ -88,11 +91,11 @@ class ObjectMappingTest extends TestCase
         $objectMapping = new ObjectMapping([
             'foo' => $this->getMockedMapping('foo', 'baz', $data),
             'bar' => $this->getMockedMapping('bar', 'bat', $data),
-        ], SimpleObject::class);
+        ], SimpleDTO::class);
 
         $bindResult = $objectMapping->bind($data);
         self::assertTrue($bindResult->isSuccess());
-        self::assertInstanceOf(SimpleObject::class, $bindResult->getValue());
+        self::assertInstanceOf(SimpleDTO::class, $bindResult->getValue());
         self::assertSame('baz', $bindResult->getValue()->foo);
         self::assertSame('bat', $bindResult->getValue()->bar);
     }
@@ -104,7 +107,7 @@ class ObjectMappingTest extends TestCase
         $objectMapping = new ObjectMapping([
             'foo' => $this->getMockedMapping('foo', 'baz', $data),
             'bar' => $this->getMockedMapping('bar', 'bat', $data, false),
-        ], SimpleObject::class);
+        ], SimpleDTO::class);
 
         $bindResult = $objectMapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
@@ -122,7 +125,7 @@ class ObjectMappingTest extends TestCase
 
         $objectMapping = new ObjectMapping([
             'foo' => $mapping,
-        ], SimpleObject::class);
+        ], SimpleDTO::class);
 
         $this->expectException(BindFailureException::class);
         $objectMapping->bind($data);
@@ -132,15 +135,16 @@ class ObjectMappingTest extends TestCase
     public function bindAppliesConstraints(): void
     {
         $constraint = self::createStub(ConstraintInterface::class);
-        $constraint->method('__invoke')->with(self::callback(static fn (SimpleObject $data) => true))->willReturn(new ValidationResult(
-            new ValidationError('error', [], 'foo[bar]')
-        ));
+        $constraint->method('__invoke')->with(self::callback(static fn (SimpleDTO $data) => true))
+            ->willReturn(new ValidationResult(
+                new ValidationError('error', [], 'foo[bar]')
+            ));
 
         $data          = Data::fromFlatArray(['foo' => 'baz', 'bar' => 'bat']);
         $objectMapping = (new ObjectMapping([
             'foo' => $this->getMockedMapping('foo', 'baz', $data),
             'bar' => $this->getMockedMapping('bar', 'bat', $data),
-        ], SimpleObject::class))->verifying($constraint);
+        ], SimpleDTO::class))->verifying($constraint);
 
         $bindResult = $objectMapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
@@ -152,7 +156,7 @@ class ObjectMappingTest extends TestCase
     #[Test]
     public function invalidApplyReturnValue(): void
     {
-        $objectMapping = new ObjectMapping([], SimpleObject::class, function () {
+        $objectMapping = new ObjectMapping([], SimpleDTO::class, function () {
             return null;
         });
         $this->expectException(MappedClassMismatchException::class);
@@ -165,9 +169,9 @@ class ObjectMappingTest extends TestCase
         $objectMapping = new ObjectMapping([
             'foo' => $this->getMockedMapping('foo', 'baz'),
             'bar' => $this->getMockedMapping('bar', 'bat'),
-        ], SimpleObject::class);
+        ], SimpleDTO::class);
 
-        $data = $objectMapping->unbind(new SimpleObject('baz', 'bat'));
+        $data = $objectMapping->unbind(new SimpleDTO('baz', 'bat'));
         self::assertSame('baz', $data->getValue('foo'));
         self::assertSame('bat', $data->getValue('bar'));
     }
@@ -179,10 +183,10 @@ class ObjectMappingTest extends TestCase
             'foo'  => $this->getMockedMapping('foo', 'baz'),
             'bar'  => $this->getMockedMapping('bar', 'bat'),
             'none' => $this->getMockedMapping('none', 'none'),
-        ], SimpleObject::class);
+        ], SimpleDTO::class);
 
         $this->expectException(NonExistentUnapplyKeyException::class);
-        $objectMapping->unbind(new SimpleObject('baz', 'bat'));
+        $objectMapping->unbind(new SimpleDTO('baz', 'bat'));
     }
 
     #[Test]
@@ -194,27 +198,45 @@ class ObjectMappingTest extends TestCase
 
         $objectMapping = new ObjectMapping([
             'foo' => $mapping,
-        ], SimpleObject::class);
+        ], SimpleDTO::class);
 
         $this->expectException(UnbindFailureException::class);
-        $objectMapping->unbind(new SimpleObject('bar', ''));
+        $objectMapping->unbind(new SimpleDTO('bar', ''));
     }
 
     #[Test]
     public function invalidUnapplyReturnValue(): void
     {
-        $objectMapping = new ObjectMapping([], SimpleObject::class, null, function () {
+        $objectMapping = new ObjectMapping([], SimpleDTO::class, null, function () {
             return null;
         });
         $this->expectException(InvalidUnapplyResultException::class);
-        $objectMapping->unbind(new SimpleObject('', ''));
+        $objectMapping->unbind(new SimpleDTO('', ''));
     }
 
     #[Test]
     public function createPrefixedKey(): void
     {
-        $objectMapping = (new ObjectMapping([], stdClass::class))->withPrefixAndRelativeKey('foo', 'bar');
-        $this->assertAttributeSame('foo[bar]', 'key', $objectMapping);
+        $fooFieldMapping = self::createStub(MappingInterface::class);
+        $fooFieldMapping->method('bind')->willReturn(BindResult::fromValue('test'));
+        $fooFieldMapping->method('withPrefixAndRelativeKey')->willReturn($fooFieldMapping);
+
+        $barFieldMapping = self::createStub(MappingInterface::class);
+        $barFieldMapping->method('bind')->willReturn(BindResult::fromValue('test2'));
+        $barFieldMapping->method('withPrefixAndRelativeKey')->willReturn($barFieldMapping);
+
+        $mapping = new ObjectMapping([
+            'foo' => new ObjectMapping([
+                'foo' => $fooFieldMapping,
+                'bar' => $barFieldMapping,
+            ], SimpleDTO::class),
+        ], DTOWithObjectMapping::class);
+
+        $result = $mapping->bind(Data::fromNestedArray(['foo' => ['foo' => 'test', 'bar' => 'test2']]));
+        $dto    = $result->getValue();
+        self::assertInstanceOf(DTOWithObjectMapping::class, $dto);
+        self::assertSame($dto->foo->foo, 'test');
+        self::assertSame($dto->foo->bar, 'test2');
     }
 
     #[Test]
@@ -234,11 +256,6 @@ class ObjectMappingTest extends TestCase
         (new ObjectMapping([
             'bar' => $mapping,
         ], stdClass::class))->withPrefixAndRelativeKey('', 'foo');
-    }
-
-    protected function getInstanceForTraitTests(): MappingInterface
-    {
-        return new ObjectMapping([], stdClass::class);
     }
 
     private function getMockedMapping(
