@@ -43,12 +43,12 @@ final class BindResult
 
     public function isSuccess(): bool
     {
-        return null === $this->formErrorSequence;
+        return $this->formErrorSequence === null;
     }
 
     public function getValue(): mixed
     {
-        if (null !== $this->formErrorSequence) {
+        if ($this->formErrorSequence !== null) {
             throw InvalidBindResultException::fromGetValueAttempt();
         }
 
@@ -57,7 +57,7 @@ final class BindResult
 
     public function getFormErrorSequence(): FormErrorSequence
     {
-        if (null === $this->formErrorSequence) {
+        if ($this->formErrorSequence === null) {
             throw ValidBindResultException::fromGetFormErrorsAttempt();
         }
 

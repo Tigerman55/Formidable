@@ -98,7 +98,7 @@ final class Data
             return $this->data[$key];
         }
 
-        if (null !== $fallback) {
+        if ($fallback !== null) {
             return $fallback;
         }
 
@@ -132,11 +132,11 @@ final class Data
         $flatArray = [];
 
         foreach ($nestedArray as $key => $value) {
-            if (! is_string($key) && ('' === $prefix || ! is_int($key))) {
+            if (! is_string($key) && ($prefix === '' || ! is_int($key))) {
                 throw InvalidKeyException::fromNonNestedKey($key);
             }
 
-            if ('' !== $prefix) {
+            if ($prefix !== '') {
                 $key = $prefix . '[' . $key . ']';
             }
 

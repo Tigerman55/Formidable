@@ -40,9 +40,9 @@ trait MappingTrait
 
         return BindResult::fromFormErrors(...array_map(
             static function (ValidationError $validationError) use ($key) {
-                if ('' === $key) {
+                if ($key === '') {
                     $finalKey = $validationError->getKeySuffix();
-                } elseif ('' === $validationError->getKeySuffix()) {
+                } elseif ($validationError->getKeySuffix() === '') {
                     $finalKey = $key;
                 } else {
                     $finalKey = $key . preg_replace('(^[^\[]+)', '[\0]', $validationError->getKeySuffix());
@@ -60,7 +60,7 @@ trait MappingTrait
 
     protected function createKeyFromPrefixAndRelativeKey(string $prefix, string $relativeKey): string
     {
-        if ('' === $prefix) {
+        if ($prefix === '') {
             return $relativeKey;
         }
 

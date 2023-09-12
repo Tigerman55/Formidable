@@ -38,12 +38,12 @@ final class StepNumberConstraint implements ConstraintInterface
             throw InvalidStepException::fromZeroOrNegativeStep($decimalStep);
         }
 
-        if (null !== $base && ! is_numeric($base)) {
+        if ($base !== null && ! is_numeric($base)) {
             throw InvalidStepException::fromNonNumericBase($base);
         }
 
         $this->step = $decimalStep;
-        $this->base = null === $base ? DecimalConstants::zero() : Decimal::fromString((string) $base);
+        $this->base = $base === null ? DecimalConstants::zero() : Decimal::fromString((string) $base);
     }
 
     public function __invoke(mixed $value): ValidationResult
@@ -72,6 +72,6 @@ final class StepNumberConstraint implements ConstraintInterface
 
     private function trimZeroDecimal(string $x): string
     {
-        return '0' === $x ? '0' : rtrim(rtrim($x, '0'), '.');
+        return $x === '0' ? '0' : rtrim(rtrim($x, '0'), '.');
     }
 }

@@ -28,7 +28,7 @@ class OptionalMappingTest extends TestCase
         $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('', 'foo');
 
         $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
-        $this->assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
+        self::assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
     }
 
     #[Test]
@@ -39,7 +39,7 @@ class OptionalMappingTest extends TestCase
         $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('', 'foo');
 
         $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
-        $this->assertNull($mapping->bind(Data::fromFlatArray(['foo' => '']))->getValue());
+        self::assertNull($mapping->bind(Data::fromFlatArray(['foo' => '']))->getValue());
     }
 
     #[Test]
@@ -63,7 +63,7 @@ class OptionalMappingTest extends TestCase
         $wrappedMapping->expects(self::once())->method('withPrefixAndRelativeKey')->with('', 'foo');
 
         $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
-        $this->assertNull($mapping->bind(Data::fromFlatArray(['foo[bar]' => '', 'foo[baz]' => '']))->getValue());
+        self::assertNull($mapping->bind(Data::fromFlatArray(['foo[bar]' => '', 'foo[baz]' => '']))->getValue());
     }
 
     #[Test]
@@ -102,7 +102,7 @@ class OptionalMappingTest extends TestCase
         $mapping = (new OptionalMapping(self::createStub(MappingInterface::class)))->verifying(
             $constraint
         );
-        $this->assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
+        self::assertNull($mapping->bind(Data::fromFlatArray([]))->getValue());
     }
 
     #[Test]

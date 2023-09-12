@@ -23,7 +23,7 @@ final class FieldMappingFactory
             $mapping = $mapping->verifying(new Constraint\MinLengthConstraint($minLength, $encoding));
         }
 
-        if (null !== $maxLength) {
+        if ($maxLength !== null) {
             $mapping = $mapping->verifying(new Constraint\MaxLengthConstraint($maxLength, $encoding));
         }
 
@@ -89,15 +89,15 @@ final class FieldMappingFactory
         int|float|string|null $max,
         int|float|string|null $step
     ): FieldMapping {
-        if (null !== $min) {
+        if ($min !== null) {
             $mapping = $mapping->verifying(new Constraint\MinNumberConstraint($min));
         }
 
-        if (null !== $max) {
+        if ($max !== null) {
             $mapping = $mapping->verifying(new Constraint\MaxNumberConstraint($max));
         }
 
-        if (null !== $step) {
+        if ($step !== null) {
             $mapping = $mapping->verifying(new Constraint\StepNumberConstraint($step, $min));
         }
 

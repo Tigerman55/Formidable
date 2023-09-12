@@ -18,7 +18,7 @@ final class InputCheckbox
         $htmlAttributes['name']  = $field->getKey();
         $htmlAttributes['value'] = 'true';
 
-        if ('true' === $field->getValue()) {
+        if ($field->getValue() === 'true') {
             $htmlAttributes['checked'] = 'checked';
         }
 

@@ -67,7 +67,7 @@ final class Form implements FormInterface
 
     public function bindFromRequest(ServerRequestInterface $request, bool $trimData = true): FormInterface
     {
-        if ('POST' === $request->getMethod()) {
+        if ($request->getMethod() === 'POST') {
             $data = Data::fromNestedArray($request->getParsedBody());
         } elseif (in_array($request->getMethod(), ['PUT', 'PATCH'])) {
             parse_str((string) $request->getBody(), $rawData);
@@ -101,7 +101,7 @@ final class Form implements FormInterface
             throw InvalidDataException::fromGetValueAttempt();
         }
 
-        if (null === $this->value) {
+        if ($this->value === null) {
             throw UnboundDataException::fromGetValueAttempt();
         }
 

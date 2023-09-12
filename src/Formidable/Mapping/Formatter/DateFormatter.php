@@ -37,7 +37,7 @@ final class DateFormatter implements FormatterInterface
             $this->timeZone
         );
 
-        if (false === $dateTime) {
+        if ($dateTime === false) {
             return BindResult::fromFormErrors(new FormError(
                 $key,
                 'error.date'

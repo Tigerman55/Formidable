@@ -29,7 +29,7 @@ final class OptionalMapping implements MappingInterface
                     return false;
                 }
 
-                if ('' === $value) {
+                if ($value === '') {
                     return false;
                 }
 
@@ -50,7 +50,7 @@ final class OptionalMapping implements MappingInterface
 
     public function unbind(mixed $value): Data
     {
-        if (null === $value) {
+        if ($value === null) {
             return Data::none();
         }
 

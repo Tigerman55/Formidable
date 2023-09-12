@@ -19,7 +19,7 @@ final class UrlConstraint implements ConstraintInterface
             throw InvalidTypeException::fromInvalidType($value, 'string');
         }
 
-        if (false === filter_var($value, FILTER_VALIDATE_URL)) {
+        if (filter_var($value, FILTER_VALIDATE_URL) === false) {
             return new ValidationResult(new ValidationError('error.url'));
         }
 

@@ -16,7 +16,7 @@ class NotEmptyConstraint implements ConstraintInterface
             throw InvalidTypeException::fromInvalidType($value, 'string');
         }
 
-        if ('' === $value) {
+        if ($value === '') {
             return new ValidationResult(new ValidationError('error.empty'));
         }
 
