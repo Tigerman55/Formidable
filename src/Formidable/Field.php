@@ -8,20 +8,12 @@ use Formidable\FormError\FormErrorSequence;
 
 final class Field
 {
-    private string $key;
-
-    private string $value;
-
-    private FormErrorSequence $errors;
-
-    private Data $data;
-
-    public function __construct(string $key, string $value, FormErrorSequence $errors, Data $data)
-    {
-        $this->key    = $key;
-        $this->value  = $value;
-        $this->errors = $errors;
-        $this->data   = $data;
+    public function __construct(
+        private readonly string $key,
+        private readonly string $value,
+        private readonly FormErrorSequence $errors,
+        private readonly Data $data
+    ) {
     }
 
     public function getKey(): string
@@ -44,17 +36,13 @@ final class Field
         return ! $this->errors->isEmpty();
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getIndexes(): array
     {
         return $this->data->getIndexes($this->key);
     }
 
-    /**
-     * @return string[]
-     */
+    /** @return string[] */
     public function getNestedValues(bool $preserveKeys = false): array
     {
         $values = [];

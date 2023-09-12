@@ -17,11 +17,8 @@ use function sprintf;
 
 final class TimeFormatter implements FormatterInterface
 {
-    private DateTimeZone $timeZone;
-
-    public function __construct(DateTimeZone $timeZone)
+    public function __construct(private readonly DateTimeZone $timeZone)
     {
-        $this->timeZone = $timeZone;
     }
 
     public function bind(string $key, Data $data): BindResult

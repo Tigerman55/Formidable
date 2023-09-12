@@ -14,8 +14,7 @@ use function is_numeric;
 
 final class MinNumberConstraint implements ConstraintInterface
 {
-    /** @var Decimal */
-    private $limit;
+    private Decimal $limit;
 
     public function __construct(int|float|string $limit)
     {

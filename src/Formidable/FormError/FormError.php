@@ -6,20 +6,11 @@ namespace Formidable\FormError;
 
 final class FormError
 {
-    /** @var string */
-    private $key;
-
-    /** @var string */
-    private $message;
-
-    /** @var array */
-    private $arguments;
-
-    public function __construct(string $key, string $message, array $arguments = [])
-    {
-        $this->key       = $key;
-        $this->message   = $message;
-        $this->arguments = $arguments;
+    public function __construct(
+        private readonly string $key,
+        private readonly string $message,
+        private readonly array $arguments = []
+    ) {
     }
 
     public function getKey(): string

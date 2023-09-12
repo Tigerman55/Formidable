@@ -12,13 +12,10 @@ final class OptionalMapping implements MappingInterface
 {
     use MappingTrait;
 
-    private MappingInterface $wrappedMapping;
-
     private string $key = '';
 
-    public function __construct(MappingInterface $wrappedMapping)
+    public function __construct(private MappingInterface $wrappedMapping)
     {
-        $this->wrappedMapping = $wrappedMapping;
     }
 
     public function bind(Data $data): BindResult

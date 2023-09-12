@@ -9,11 +9,8 @@ use Formidable\Mapping\BindResult;
 
 final class IgnoredFormatter implements FormatterInterface
 {
-    private mixed $value;
-
-    public function __construct(mixed $value)
+    public function __construct(private readonly mixed $value)
     {
-        $this->value = $value;
     }
 
     public function bind(string $key, Data $data): BindResult

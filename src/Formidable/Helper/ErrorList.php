@@ -14,10 +14,7 @@ final class ErrorList
 {
     use AttributeTrait;
 
-    /** @var ErrorFormatter */
-    private $errorFormatter;
-
-    public function __construct(?ErrorFormatter $errorFormatter = null)
+    public function __construct(private ?ErrorFormatter $errorFormatter = null)
     {
         $this->errorFormatter = $errorFormatter ?: new ErrorFormatter();
     }

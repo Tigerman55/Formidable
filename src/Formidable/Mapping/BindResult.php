@@ -13,11 +13,8 @@ final class BindResult
 {
     private mixed $value;
 
-    private ?FormErrorSequence $formErrorSequence;
-
-    private function __construct()
+    private function __construct(private ?FormErrorSequence $formErrorSequence = null)
     {
-        $this->formErrorSequence = null;
     }
 
     public static function fromValue(mixed $value): self

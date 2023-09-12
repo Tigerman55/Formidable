@@ -6,17 +6,11 @@ namespace Formidable\Mapping\Constraint;
 
 final class ValidationError
 {
-    private string $message;
-
-    private array $arguments;
-
-    private string $keySuffix;
-
-    public function __construct(string $message, array $arguments = [], string $keySuffix = '')
-    {
-        $this->message   = $message;
-        $this->arguments = $arguments;
-        $this->keySuffix = $keySuffix;
+    public function __construct(
+        private readonly string $message,
+        private readonly array $arguments = [],
+        private readonly string $keySuffix = ''
+    ) {
     }
 
     public function getMessage(): string

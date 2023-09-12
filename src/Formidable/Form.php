@@ -17,20 +17,17 @@ use function parse_str;
 
 final class Form implements FormInterface
 {
-    private MappingInterface $mapping;
-
     private Data $data;
 
     private mixed $value;
 
     private FormErrorSequence $errors;
 
-    public function __construct(MappingInterface $mapping)
+    public function __construct(private readonly MappingInterface $mapping)
     {
-        $this->mapping = $mapping;
-        $this->data    = Data::none();
-        $this->errors  = new FormErrorSequence();
-        $this->value   = null;
+        $this->data   = Data::none();
+        $this->errors = new FormErrorSequence();
+        $this->value  = null;
     }
 
     public function fill(mixed $formData): FormInterface

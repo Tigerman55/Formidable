@@ -10,8 +10,7 @@ use function sprintf;
 
 trait NestedMappingExceptionTrait
 {
-    /** @var string */
-    private $mappingKey;
+    private string $mappingKey;
 
     protected static function fromException(string $verb, string $mappingKey, Throwable $previous): self
     {

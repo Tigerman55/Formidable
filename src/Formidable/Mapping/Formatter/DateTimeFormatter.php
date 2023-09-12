@@ -17,16 +17,8 @@ use function sprintf;
 
 final class DateTimeFormatter implements FormatterInterface
 {
-    /** @var DateTimeZone */
-    private $timeZone;
-
-    /** @var bool */
-    private $localTime;
-
-    public function __construct(DateTimeZone $timeZone, bool $localTime = false)
+    public function __construct(private readonly DateTimeZone $timeZone, private readonly bool $localTime = false)
     {
-        $this->timeZone  = $timeZone;
-        $this->localTime = $localTime;
     }
 
     public function bind(string $key, Data $data): BindResult

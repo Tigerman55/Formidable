@@ -15,18 +15,14 @@ final class BooleanFormatter implements FormatterInterface
 {
     public function bind(string $key, Data $data): BindResult
     {
-        switch ($data->getValue($key, 'false')) {
-            case 'true':
-                return BindResult::fromValue(true);
-
-            case 'false':
-                return BindResult::fromValue(false);
-        }
-
-        return BindResult::fromFormErrors(new FormError(
-            $key,
-            'error.boolean'
-        ));
+        return match ($data->getValue($key, 'false')) {
+            'true' => BindResult::fromValue(true),
+            'false' => BindResult::fromValue(false),
+            default => BindResult::fromFormErrors(new FormError(
+                $key,
+                'error.boolean'
+            )),
+        };
     }
 
     public function unbind(string $key, mixed $value): Data

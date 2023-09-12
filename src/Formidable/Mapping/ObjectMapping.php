@@ -31,17 +31,15 @@ final class ObjectMapping implements MappingInterface
     /** @var array<non-empty-string, MappingInterface> */
     private array $mappings = [];
 
-    /** @var class-string */
-    private string $className;
-
-    private Closure $apply;
-
-    private Closure $unapply;
-
     private string $key = '';
 
-    public function __construct(array $mappings, string $className, ?callable $apply = null, ?callable $unapply = null)
-    {
+    /** @param class-string $className */
+    public function __construct(
+        array $mappings,
+        private readonly string $className,
+        private ?Closure $apply = null,
+        private ?Closure $unapply = null
+    ) {
         foreach ($mappings as $mappingKey => $mapping) {
             if (! is_string($mappingKey) || $mappingKey === '') {
                 throw InvalidMappingKeyException::fromInvalidMappingKey($mappingKey);
@@ -59,13 +57,13 @@ final class ObjectMapping implements MappingInterface
         }
 
         if ($apply === null) {
-            $apply = function (...$arguments) {
+            $this->apply = function (...$arguments) {
                 return new $this->className(...array_values($arguments));
             };
         }
 
         if ($unapply === null) {
-            $unapply = function ($value) {
+            $this->unapply = function ($value) {
                 if (! $value instanceof $this->className) {
                     throw MappedClassMismatchException::fromMismatchedClass($this->className, $value);
                 }
@@ -80,10 +78,6 @@ final class ObjectMapping implements MappingInterface
                 return $values;
             };
         }
-
-        $this->className = $className;
-        $this->apply     = $apply;
-        $this->unapply   = $unapply;
     }
 
     public function withMapping(string $key, MappingInterface $mapping): self

@@ -36,7 +36,7 @@
   "scripts": {
     "cs": "phpcs",
     "cs-fix": "phpcbf",
-    "psalm": "psalm",
+    "psalm": "psalm --no-cache",
     "test": "phpunit"
   }
 }

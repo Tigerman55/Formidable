@@ -12,18 +12,11 @@ use function is_string;
 
 final class MinLengthConstraint implements ConstraintInterface
 {
-    private int $lengthLimit;
-
-    private string $encoding;
-
-    public function __construct(int $lengthLimit, string $encoding = 'utf-8')
+    public function __construct(private readonly int $lengthLimit, private readonly string $encoding = 'utf-8')
     {
         if ($lengthLimit < 0) {
             throw InvalidLengthException::fromNegativeLength($lengthLimit);
         }
-
-        $this->lengthLimit = $lengthLimit;
-        $this->encoding    = $encoding;
     }
 
     public function __invoke(mixed $value): ValidationResult

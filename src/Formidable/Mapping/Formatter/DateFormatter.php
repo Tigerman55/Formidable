@@ -14,12 +14,8 @@ use Formidable\Mapping\Formatter\Exception\InvalidTypeException;
 
 final class DateFormatter implements FormatterInterface
 {
-    /** @var DateTimeZone */
-    private $timeZone;
-
-    public function __construct(DateTimeZone $timeZone)
+    public function __construct(private readonly DateTimeZone $timeZone)
     {
-        $this->timeZone = $timeZone;
     }
 
     public function bind(string $key, Data $data): BindResult
