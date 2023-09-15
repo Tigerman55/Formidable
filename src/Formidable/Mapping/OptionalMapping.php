@@ -21,7 +21,7 @@ final class OptionalMapping implements MappingInterface
     public function bind(Data $data): BindResult
     {
         if (
-            ! $data->filter(function (string $value, string $key) {
+            ! $data->filter(function (string $value, string $key): bool {
                 if ($key !== $this->key && ! str_starts_with($key, $this->key . '[')) {
                     return false;
                 }

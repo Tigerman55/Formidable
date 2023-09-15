@@ -33,6 +33,7 @@ final class RepeatedMapping implements MappingInterface
                 continue;
             }
 
+            /** @psalm-suppress MixedAssignment */
             $values[] = $bindResult->getValue();
         }
 
@@ -51,6 +52,7 @@ final class RepeatedMapping implements MappingInterface
 
         $data = Data::none();
 
+        /** @psalm-suppress MixedAssignment */
         foreach ($value as $index => $individualValue) {
             $data = $data->merge(
                 $this->wrappedMapping

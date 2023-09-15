@@ -31,15 +31,14 @@ final class ErrorFormatter
         'error.step-number'   => 'Value is invalid, closest valid values are {lowValue, number} and {highValue, number}', // phpcs:ignore
     ];
 
-    /** @var string[] */
-    private $messages = [];
+    /** @var array<string, string> */
+    private $messages;
 
+    /** @param array<string, string> $messages */
     public function __construct(array $messages = [])
     {
         if (! class_exists(MessageFormatter::class)) {
-            // @codeCoverageIgnoreStart
             throw MissingIntlExtensionException::fromMissingExtension();
-            // @codeCoverageIgnoreEnd
         }
 
         $this->messages = array_replace(self::BUILD_IN_MESSAGES, $messages);

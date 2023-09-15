@@ -40,7 +40,7 @@ final class Select
         return $document->saveHTML($select);
     }
 
-    private function addOptions(DOMDocument $document, DOMNode $node, array $options, array $selectedValues)
+    private function addOptions(DOMDocument $document, DOMNode $node, array $options, array $selectedValues): void
     {
         foreach ($options as $value => $label) {
             if (is_int($value)) {
@@ -63,7 +63,7 @@ final class Select
             $option->appendChild($document->createTextNode($label));
             $htmlAttributes = ['value' => $value];
 
-            if (in_array($value, $selectedValues)) {
+            if (in_array($value, $selectedValues, true)) {
                 $htmlAttributes['selected'] = 'selected';
             }
 

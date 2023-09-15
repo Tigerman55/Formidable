@@ -27,6 +27,7 @@ final class FieldMappingFactory
             $mapping = $mapping->verifying(new Constraint\MaxLengthConstraint($maxLength, $encoding));
         }
 
+        /** @var FieldMapping $mapping */
         return $mapping;
     }
 
@@ -70,17 +71,17 @@ final class FieldMappingFactory
 
     public static function time(?DateTimeZone $timeZone = null): FieldMapping
     {
-        return new FieldMapping(new Formatter\TimeFormatter($timeZone ?: self::getUtcTimeZone()));
+        return new FieldMapping(new Formatter\TimeFormatter($timeZone ?? self::getUtcTimeZone()));
     }
 
     public static function date(?DateTimeZone $timeZone = null): FieldMapping
     {
-        return new FieldMapping(new Formatter\DateFormatter($timeZone ?: self::getUtcTimeZone()));
+        return new FieldMapping(new Formatter\DateFormatter($timeZone ?? self::getUtcTimeZone()));
     }
 
     public static function dateTime(?DateTimeZone $timeZone = null, bool $localTime = false): FieldMapping
     {
-        return new FieldMapping(new Formatter\DateTimeFormatter($timeZone ?: self::getUtcTimeZone(), $localTime));
+        return new FieldMapping(new Formatter\DateTimeFormatter($timeZone ?? self::getUtcTimeZone(), $localTime));
     }
 
     private static function addNumberConstraints(
@@ -101,6 +102,7 @@ final class FieldMappingFactory
             $mapping = $mapping->verifying(new Constraint\StepNumberConstraint($step, $min));
         }
 
+        /** @var FieldMapping $mapping */
         return $mapping;
     }
 

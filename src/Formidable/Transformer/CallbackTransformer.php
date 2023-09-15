@@ -8,6 +8,7 @@ use Closure;
 
 final class CallbackTransformer implements TransformerInterface
 {
+    /** @param Closure(string, string): string $callback */
     public function __construct(private readonly Closure $callback)
     {
     }

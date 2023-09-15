@@ -24,6 +24,7 @@ use function class_exists;
 use function is_array;
 use function is_string;
 
+/** @template T */
 final class ObjectMapping implements MappingInterface
 {
     use MappingTrait;
@@ -33,12 +34,16 @@ final class ObjectMapping implements MappingInterface
 
     private string $key = '';
 
-    /** @param class-string $className */
+    private readonly Closure $apply;
+
+    private readonly Closure $unapply;
+
+    /** @param class-string<T> $className */
     public function __construct(
         array $mappings,
         private readonly string $className,
-        private ?Closure $apply = null,
-        private ?Closure $unapply = null
+        ?Closure $apply = null,
+        ?Closure $unapply = null
     ) {
         foreach ($mappings as $mappingKey => $mapping) {
             if (! is_string($mappingKey) || $mappingKey === '') {
@@ -56,32 +61,34 @@ final class ObjectMapping implements MappingInterface
             throw NonExistentMappedClassException::fromNonExistentClass($className);
         }
 
-        if ($apply === null) {
-            $this->apply = function (...$arguments) {
-                return new $this->className(...array_values($arguments));
-            };
-        }
+        $this->apply = $apply ?? function (mixed ...$arguments): mixed {
+            /** @psalm-suppress MixedMethodCall */
+            return new $this->className(...array_values($arguments));
+        };
 
-        if ($unapply === null) {
-            $this->unapply = function ($value) {
-                if (! $value instanceof $this->className) {
-                    throw MappedClassMismatchException::fromMismatchedClass($this->className, $value);
-                }
+        $this->unapply = $unapply ?? function (mixed $value): array {
+            if (! $value instanceof $this->className) {
+                throw MappedClassMismatchException::fromMismatchedClass($this->className, $value);
+            }
 
-                $values          = [];
-                $reflectionClass = new ReflectionClass($this->className);
+            $values          = [];
+            $reflectionClass = new ReflectionClass($this->className);
 
-                foreach ($reflectionClass->getProperties() as $property) {
-                    $values[$property->getName()] = $property->getValue($value);
-                }
+            foreach ($reflectionClass->getProperties() as $property) {
+                /** @psalm-suppress MixedAssignment */
+                $values[$property->getName()] = $property->getValue($value);
+            }
 
-                return $values;
-            };
-        }
+            return $values;
+        };
     }
 
     public function withMapping(string $key, MappingInterface $mapping): self
     {
+        if ($key === '') {
+            throw InvalidMappingKeyException::fromInvalidMappingKey($key);
+        }
+
         $clone                 = clone $this;
         $clone->mappings[$key] = $mapping->withPrefixAndRelativeKey($clone->key, $key);
 
@@ -105,6 +112,7 @@ final class ObjectMapping implements MappingInterface
                 continue;
             }
 
+            /** @psalm-suppress MixedAssignment */
             $arguments[$key] = $bindResult->getValue();
         }
 

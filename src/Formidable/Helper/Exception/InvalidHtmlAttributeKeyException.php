@@ -6,13 +6,10 @@ namespace Formidable\Helper\Exception;
 
 use DomainException;
 
-use function gettype;
-use function sprintf;
-
 final class InvalidHtmlAttributeKeyException extends DomainException implements ExceptionInterface
 {
-    public static function fromInvalidKey(mixed $key): self
+    public static function fromInvalidKey(): self
     {
-        return new self(sprintf('HTML attribute key must be of type string, but got %s', gettype($key)));
+        return new self('HTML attribute key must be of type string, but got integer');
     }
 }

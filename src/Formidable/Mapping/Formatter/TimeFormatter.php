@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Formidable\Mapping\Formatter;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use DateTimeZone;
 use Formidable\Data;
 use Formidable\FormError\FormError;
@@ -59,8 +58,8 @@ final class TimeFormatter implements FormatterInterface
 
     public function unbind(string $key, mixed $value): Data
     {
-        if (! $value instanceof DateTimeInterface) {
-            throw InvalidTypeException::fromInvalidType($value, 'DateTimeInterface');
+        if (! $value instanceof DateTimeImmutable) {
+            throw InvalidTypeException::fromInvalidType($value, 'DateTimeImmutable');
         }
 
         $dateTime = $value->setTimezone($this->timeZone);

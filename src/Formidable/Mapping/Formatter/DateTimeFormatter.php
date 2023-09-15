@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Formidable\Mapping\Formatter;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 use DateTimeZone;
 use Formidable\Data;
 use Formidable\FormError\FormError;
@@ -30,7 +29,7 @@ final class DateTimeFormatter implements FormatterInterface
             ));
         }
 
-        // Technically, seconds must always be present, according to the spec, but at least Chrome seems to ommit them.
+        // Technically, seconds must always be present, according to the spec, but at least Chrome seems to omit them.
         if (
             ! preg_match(
                 '(^
@@ -48,7 +47,8 @@ final class DateTimeFormatter implements FormatterInterface
             ));
         }
 
-        return BindResult::fromValue(DateTimeImmutable::createFromFormat(
+        /** @var DateTimeImmutable $dateTime */
+        $dateTime = DateTimeImmutable::createFromFormat(
             '!Y-m-d\TH:i:s.u' . ($this->localTime ? '' : 'P'),
             sprintf(
                 '%s-%s-%sT%s:%s:%s.%s%s',
@@ -62,13 +62,14 @@ final class DateTimeFormatter implements FormatterInterface
                 $matches['timezone'] ?? ''
             ),
             $this->timeZone
-        )->setTimezone($this->timeZone));
+        );
+        return BindResult::fromValue($dateTime->setTimezone($this->timeZone));
     }
 
     public function unbind(string $key, mixed $value): Data
     {
-        if (! $value instanceof DateTimeInterface) {
-            throw InvalidTypeException::fromInvalidType($value, 'DateTimeInterface');
+        if (! $value instanceof DateTimeImmutable) {
+            throw InvalidTypeException::fromInvalidType($value, 'DateTimeImmutable');
         }
 
         $dateTime     = $value->setTimezone($this->timeZone);

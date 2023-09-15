@@ -11,7 +11,7 @@ use function sprintf;
 
 final class InvalidMappingKeyException extends DomainException implements ExceptionInterface
 {
-    public static function fromInvalidMappingKey(mixed $mappingKey): self
+    public static function fromInvalidMappingKey(string|int $mappingKey): self
     {
         return new self(sprintf('Mapping key must be a nonempty string, but got %s', gettype($mappingKey)));
     }
