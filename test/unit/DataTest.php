@@ -61,7 +61,7 @@ class DataTest extends TestCase
     #[Test]
     public function filter(): void
     {
-        $data = Data::fromFlatArray(['foo' => 'bar', 'baz' => 'bat'])->filter(function (string $value, string $key) {
+        $data = Data::fromFlatArray(['foo' => 'bar', 'baz' => 'bat'])->filter(function (string $value, string $key): bool|null {
             return $key === 'baz';
         });
 

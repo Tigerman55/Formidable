@@ -11,8 +11,10 @@ use Formidable\FormError\FormErrorSequence;
 use Formidable\Mapping\MappingInterface;
 use Formidable\Transformer\TrimTransformer;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 use function in_array;
+use function is_array;
 use function parse_str;
 
 final class Form implements FormInterface
@@ -65,7 +67,12 @@ final class Form implements FormInterface
     public function bindFromRequest(ServerRequestInterface $request, bool $trimData = true): FormInterface
     {
         if ($request->getMethod() === 'POST') {
-            $data = Data::fromNestedArray($request->getParsedBody());
+            $parsedBody = $request->getParsedBody();
+            if (! is_array($parsedBody)) {
+                throw new RuntimeException('parsed body is not an array');
+            }
+
+            $data = Data::fromNestedArray($parsedBody);
         } elseif (in_array($request->getMethod(), ['PUT', 'PATCH'])) {
             parse_str((string) $request->getBody(), $rawData);
             $data = Data::fromNestedArray($rawData);

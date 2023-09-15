@@ -16,7 +16,6 @@ use function array_reduce;
 use function array_unique;
 use function count;
 use function is_array;
-use function is_int;
 use function is_string;
 use function preg_match;
 use function preg_quote;
@@ -26,6 +25,7 @@ use const ARRAY_FILTER_USE_KEY;
 
 final class Data
 {
+    /** @param array<string, string> $data */
     private function __construct(private array $data)
     {
     }
@@ -45,13 +45,14 @@ final class Data
         $originalCount = count($flatArray);
 
         if ($originalCount > count(array_filter($flatArray, 'is_string', ARRAY_FILTER_USE_KEY))) {
-            throw InvalidKeyException::fromArrayWithNonStringKeys($flatArray);
+            throw InvalidKeyException::fromArrayWithNonStringKeys();
         }
 
         if ($originalCount > count(array_filter($flatArray, 'is_string'))) {
             throw InvalidValueException::fromArrayWithNonStringValues($flatArray);
         }
 
+        /** @var array<string, string> $flatArray */
         return new self($flatArray);
     }
 
@@ -70,7 +71,8 @@ final class Data
 
     public function filter(callable $filter): self
     {
-        $newData       = clone $this;
+        $newData = clone $this;
+        /** @psalm-suppress MixedArgumentTypeCoercion */
         $newData->data = array_filter($newData->data, $filter, ARRAY_FILTER_USE_BOTH);
 
         return $newData;
@@ -105,9 +107,11 @@ final class Data
         throw NonExistentKeyException::fromNonExistentKey($key);
     }
 
+    /** @return array<string> */
     public function getIndexes(string $key): array
     {
-        return array_unique(
+        /** @var array<string> $indexes */
+        $indexes = array_unique(
             array_reduce(
                 array_keys($this->data),
                 static function (array $indexes, string $currentKey) use ($key) {
@@ -120,6 +124,7 @@ final class Data
                 []
             )
         );
+        return $indexes;
     }
 
     public function isEmpty(): bool
@@ -127,13 +132,21 @@ final class Data
         return empty($this->data);
     }
 
+    /**
+     * @param array<array-key, mixed> $nestedArray
+     * @return array<string, string>
+     */
     private static function flattenNestedArray(array $nestedArray, string $prefix = ''): array
     {
         $flatArray = [];
 
         foreach ($nestedArray as $key => $value) {
-            if (! is_string($key) && ($prefix === '' || ! is_int($key))) {
-                throw InvalidKeyException::fromNonNestedKey($key);
+            if (! is_string($value) && ! is_array($value)) {
+                throw InvalidValueException::fromNonNestedValue($value);
+            }
+
+            if (! is_string($key) && $prefix === '') {
+                throw InvalidKeyException::fromNonNestedKey();
             }
 
             if ($prefix !== '') {
@@ -145,12 +158,7 @@ final class Data
                 continue;
             }
 
-            if (is_array($value)) {
-                $flatArray += self::flattenNestedArray($value, $key);
-                continue;
-            }
-
-            throw InvalidValueException::fromNonNestedValue($value);
+            $flatArray += self::flattenNestedArray($value, $key);
         }
 
         return $flatArray;

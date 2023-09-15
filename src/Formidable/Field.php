@@ -36,7 +36,7 @@ final class Field
         return ! $this->errors->isEmpty();
     }
 
-    /** @return string[] */
+    /** @return array<string> */
     public function getIndexes(): array
     {
         return $this->data->getIndexes($this->key);

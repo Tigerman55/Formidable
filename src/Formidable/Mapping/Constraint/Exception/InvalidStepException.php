@@ -7,26 +7,18 @@ namespace Formidable\Mapping\Constraint\Exception;
 use DomainException;
 use Litipk\BigNumbers\Decimal;
 
-use function gettype;
-use function is_string;
 use function sprintf;
 
 final class InvalidStepException extends DomainException implements ExceptionInterface
 {
-    public static function fromNonNumericStep(mixed $step): self
+    public static function fromNonNumericStep(string $step): self
     {
-        return new self(sprintf(
-            'Step was expected to be numeric, but got %s',
-            is_string($step) ? sprintf('"%s"', $step) : gettype($step)
-        ));
+        return new self(sprintf('Step was expected to be numeric, but got "%s"', $step));
     }
 
-    public static function fromNonNumericBase(mixed $base): self
+    public static function fromNonNumericBase(string $base): self
     {
-        return new self(sprintf(
-            'Base was expected to be numeric, but got %s',
-            is_string($base) ? sprintf('"%s"', $base) : gettype($base)
-        ));
+        return new self(sprintf('Base was expected to be numeric, but got "%s"', $base));
     }
 
     public static function fromZeroOrNegativeStep(Decimal $step): self

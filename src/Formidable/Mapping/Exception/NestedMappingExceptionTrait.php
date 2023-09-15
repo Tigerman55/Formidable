@@ -10,7 +10,7 @@ use function sprintf;
 
 trait NestedMappingExceptionTrait
 {
-    private string $mappingKey;
+    private string $mappingKey = '';
 
     protected static function fromException(string $verb, string $mappingKey, Throwable $previous): self
     {
@@ -33,6 +33,7 @@ trait NestedMappingExceptionTrait
 
     public function getActualException(): Throwable
     {
+        /** @var Throwable $previous */
         $previous = $this->getPrevious();
 
         if ($previous instanceof self) {

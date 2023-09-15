@@ -16,7 +16,7 @@ use function preg_replace;
 
 trait MappingTrait
 {
-    /** @var list<ConstraintInterface> */
+    /** @var array<array-key, ConstraintInterface> */
     private array $constraints = [];
 
     public function verifying(ConstraintInterface ...$constraints): MappingInterface
