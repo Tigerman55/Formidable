@@ -14,7 +14,7 @@ like this:
     <?php if ($form->hasGlobalErrors()): ?>
         <ul class="errors">
             <?php foreach ($form->getGlobalErrors() as $error): ?>
-                <li><?php echo $error->getMessage(); ?></li>
+                <li><?= $error->getMessage(); ?></li>
             <?php endforeach; ?>
         </ul>
     <?php endforeach; ?>
@@ -25,12 +25,12 @@ like this:
         type="text"
         id="input.name"
         name="name"
-        value="<?php echo htmlspecialchars($field->getValue()); ?>"
+        value="<?= htmlspecialchars($field->getValue()); ?>"
     >
     <?php if ($field->hasErrors()): ?>
         <ul class="errors">
             <?php foreach ($field->getErrors() as $error): ?>
-                <li><?php echo $error->getMessage(); ?></li>
+                <li><?= $error->getMessage(); ?></li>
             <?php endforeach; ?>
         </ul>
     <?php endforeach; ?>
@@ -41,12 +41,12 @@ like this:
         type="email"
         id="input.emailAddress"
         name="emailAddress"
-        value="<?php echo htmlspecialchars($field->getValue()); ?>"
+        value="<?= htmlspecialchars($field->getValue()); ?>"
     >
     <?php if ($field->hasErrors()): ?>
         <ul class="errors">
             <?php foreach ($field->getErrors() as $error): ?>
-                <li><?php echo $error->getMessage(); ?></li>
+                <li><?= $error->getMessage(); ?></li>
             <?php endforeach; ?>
         </ul>
     <?php endforeach; ?>
@@ -70,17 +70,17 @@ $errorList = new Formidable\Helper\ErrorList();
 $inputText = new Formidable\Helper\InputText();
 ?>
 <form method="post">
-    <?php echo $errorList($form->getGlobalErrors(), ['class' => 'errors']); ?>
+    <?= $errorList($form->getGlobalErrors(), ['class' => 'errors']); ?>
 
     <?php $field = $form->getField('name'); ?>
     <label for="input.name">Name</label>
-    <?php echo $inputText($field); ?>
-    <?php echo $errorList($field->getErrors(), ['class' => 'errors']); ?>
+    <?= $inputText($field); ?>
+    <?= $errorList($field->getErrors(), ['class' => 'errors']); ?>
 
     <?php $field = $form->getField('emailAddress'); ?>
     <label for="input.emailAddress">Email Address</label>
-    <?php echo $inputText($field, ['type' => 'email']); ?>
-    <?php echo $errorList($field->getErrors(), ['class' => 'errors']); ?>
+    <?= $inputText($field, ['type' => 'email']); ?>
+    <?= $errorList($field->getErrors(), ['class' => 'errors']); ?>
 
     <input type="submit">
 </form>

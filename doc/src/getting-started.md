@@ -6,12 +6,15 @@ simple example:
 
 ```php
 <?php
+
+declare(strict_types=1);
+
 use Formidable\Form;
 use Formidable\Mapping\FieldMappingFactory;
 use Formidable\Mapping\ObjectMapping;
 
 $form = new Form(new ObjectMapping([
-    'name' => FieldMappingFactory::text(1),
+    'name'         => FieldMappingFactory::text(1),
     'emailAddress' => FieldMappingFactory::emailAddress(),
 ], PersonFormData::class));
 ```
@@ -21,53 +24,31 @@ This will create a basic form with two fields:
 - a name (which must be at least one character long)
 - an email address
 
-The ObjectMapping class defines how the form fields map to a typed form data object. The form data object is an
-intermediate transfer object, distinct from an entity. It is the bridge between the form and the entity. It is
-responsible for defining and enforcing data types and input validation rules. Once data has been mapped into the form
-data object with no errors, it can be considered filtered, valid, and type safe, making it trivial to populate an entity
-or database row.
+The `ObjectMapping` class defines how the form fields map to a typed form data object. The form data object is an intermediate transfer object, distinct from an entity. It is the bridge between the form and the entity. It is responsible for defining and enforcing data types and input validation rules. Once data has been mapped into the form data object with no errors, it can be considered filtered, valid, and type safe, making it trivial to populate an entity or database row.
 
-The form data object accepts data via constructor injection, and reads the properties for populating the Form from the
-data via reflection. The PersonFormData from the above example looks like this:
+Formidable's `ObjectMapping` requires that your Form DTO implements our interface `FormDataTransferObjectInterface` which specifies a static factory method. When data is extracted from the form data for unbinding (validation step and converting to good PHP types), all values will be extracted via reflection from the object, so the related dto property names must match the form mapping names you have specified.
 
-```
+The PersonFormData from the above example could look like this:
+
+```php
 <?php
-final class PersonFormData
+
+declare(strict_types=1);
+
+use Formidable\FormDataTransferObjectInterface;
+
+final class PersonFormData implements FormDataTransferObjectInterface
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $emailAddress;
-
-    public function __construct(string $name, string $emailAddress)
+    public function __construct(public readonly string $name, public readonly string $emailAddress)
     {
-        $this->name = $name;
-        $this->emailAddress = $emailAddress;
     }
 
-    public function getName() : string
+    public static function fromArrayOfArguments(array $arguments) : FormDataTransferObjectInterface
     {
-        return $this->name;
-    }
-
-    public function getEmailAddress() : string
-    {
-        return $this->emailAddress;
+        return new self(...$arguments);
     }
 }
 ```
-
-As we have not specified an `apply()` or `unapply()` callable when instantiating the `ObjectMapping`, it is going to use
-the default functions supplied with Formidable. This means that the `PersonFormData` constructor will receive the
-arguments in the order in which they were specified during object mapping construction. When data are extracted from the
-form data for unbinding, all values will be extracted via reflection from the object, so the property names must match
-the mapping names.
-
 # Using the form to handle input
 
 Now that the form is created, let's use it to validate some input. Formidable is build with PSR-7 compatibility in mind,

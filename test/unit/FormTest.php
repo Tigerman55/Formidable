@@ -17,6 +17,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Test\Unit\Mapping\TestAsset\SimpleDTO;
 
 use function iterator_to_array;
 
@@ -57,14 +58,15 @@ class FormTest extends TestCase
     #[Test]
     public function fill(): void
     {
-        $mapping = $this->createMock(MappingInterface::class);
-        $mapping->expects(self::once())
+        $formData    = new SimpleDTO('defaultFooValue', 'defaultBarValue');
+        $formMapping = $this->createMock(MappingInterface::class);
+        $formMapping->expects(self::once())
             ->method('unbind')
-            ->with(['foo' => 'bar'])
-            ->willReturn(Data::fromFlatArray(['foo' => 'bar']));
+            ->willReturn(Data::fromFlatArray(['foo' => 'defaultFooValue']));
 
-        $form = (new Form($mapping))->fill(['foo' => 'bar']);
-        self::assertSame('bar', $form->getField('foo')->getValue());
+        $form = new Form($formMapping);
+        $form = $form->fill($formData);
+        self::assertSame('defaultFooValue', $form->getField('foo')->getValue());
     }
 
     #[Test]
@@ -209,6 +211,33 @@ class FormTest extends TestCase
             ->method('bind')
             ->with(self::callback(static fn(Data $data) => $data->hasKey('foo') && $data->getValue('foo') === 'bar'))
             ->willReturn(BindResult::fromValue('bar'));
+        return $mapping;
+    }
+
+    private function getMockedMapping(
+        string $key,
+        ?string $value = null,
+        ?Data $data = null,
+        bool $success = true
+    ): MappingInterface {
+        $mapping = $this->createMock(MappingInterface::class);
+
+        if ($value !== null) {
+            $mapping->method('unbind')
+                ->with($value)
+                ->willReturn(Data::fromFlatArray([$key => $value]));
+        }
+
+        if ($value !== null && $data !== null) {
+            $mapping->method('bind')
+                ->with($data)
+                ->willReturn($success
+                ? BindResult::fromValue($value)
+                : BindResult::fromFormErrors(new FormError($key, $value)));
+        }
+
+        $mapping->method('withPrefixAndRelativeKey')->with('', $key)->willReturn($mapping);
+
         return $mapping;
     }
 }

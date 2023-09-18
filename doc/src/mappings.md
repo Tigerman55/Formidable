@@ -45,7 +45,7 @@ $mapping = new ObjectMapping([
 Your HTML field would have to look like this:
 
 ```html
-<input type="text" name="child[text]" value="<?php echo $form->getField('child[text]')->getValue(); ?>">
+<input type="text" name="child[text]" value="<?= $form->getField('child[text]')->getValue(); ?>">
 ```
 
 # `OptionalMapping` class

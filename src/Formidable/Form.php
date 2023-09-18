@@ -32,7 +32,7 @@ final class Form implements FormInterface
         $this->value  = null;
     }
 
-    public function fill(mixed $formData): FormInterface
+    public function fill(object $formData): FormInterface
     {
         $form        = clone $this;
         $form->data  = $this->mapping->unbind($formData);
