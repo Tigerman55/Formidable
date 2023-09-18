@@ -17,11 +17,13 @@ use Formidable\Mapping\Exception\NonExistentUnapplyKeyException;
 use Formidable\Mapping\Exception\UnbindFailureException;
 use ReflectionClass;
 use Throwable;
+use TypeError;
 
 use function array_key_exists;
 use function array_values;
 use function class_exists;
 use function is_array;
+use function is_object;
 use function is_string;
 
 final class ObjectMapping implements MappingInterface
@@ -69,7 +71,7 @@ final class ObjectMapping implements MappingInterface
             return new $this->className(...array_values($arguments));
         };
 
-        $this->unapply = $unapply ?? function (null|object $objInstance): array {
+        $this->unapply = $unapply ?? function (object|null $objInstance): array {
             if (! $objInstance instanceof $this->className) {
                 throw MappedClassMismatchException::fromMismatchedClass($this->className, $objInstance);
             }
@@ -135,9 +137,12 @@ final class ObjectMapping implements MappingInterface
 
     public function unbind(mixed $value): Data
     {
-        $data    = Data::none();
-        $unapply = $this->unapply;
-        $values  = $unapply($value);
+        if (! is_object($value)) {
+            throw new TypeError('cannot unbind a non object in object mapping');
+        }
+
+        $data   = Data::none();
+        $values = ($this->unapply)($value);
 
         if (! is_array($values)) {
             throw InvalidUnapplyResultException::fromInvalidUnapplyResult($values);

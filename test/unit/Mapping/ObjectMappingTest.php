@@ -81,7 +81,7 @@ class ObjectMappingTest extends TestCase
     {
         $mapping = new ObjectMapping([], stdClass::class);
         $this->expectException(MappedClassMismatchException::class);
-        $mapping->unbind('foo');
+        $mapping->unbind(new SimpleDTO('test1', 'test2'));
     }
 
     #[Test]
