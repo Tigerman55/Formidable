@@ -13,6 +13,7 @@ use function array_filter;
 use function array_merge;
 use function count;
 
+/** @template-implements IteratorAggregate<array-key, FormError> */
 final class FormErrorSequence implements IteratorAggregate, Countable
 {
     /** @var FormError[] */

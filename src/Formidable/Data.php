@@ -69,10 +69,10 @@ final class Data
         return $newData;
     }
 
+    /** @param callable(string, string):bool $filter */
     public function filter(callable $filter): self
     {
-        $newData = clone $this;
-        /** @psalm-suppress MixedArgumentTypeCoercion */
+        $newData       = clone $this;
         $newData->data = array_filter($newData->data, $filter, ARRAY_FILTER_USE_BOTH);
 
         return $newData;

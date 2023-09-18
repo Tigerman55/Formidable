@@ -17,6 +17,9 @@ Let's say you want to verify that an input matches a concrete pattern, your cons
 
 ```php
 <?php
+
+declare(strict_types=1);
+
 use Assert\Assertion;
 use Formidable\Mapping\Constraint\ConstraintInterface;
 
@@ -39,15 +42,16 @@ To assign the new constraint to a mapping, you could do something like this:
 
 ```php
 <?php
+
 $mapping = FieldMappingFactory::text()->verifying(new PatternConstraint());
 ```
 
 !!!note "Type Assertion"
-    You may ask yourself, what the `Assertion` is for. Theoretically, you should always receive a string here, as long
+    You may ask yourself, what the `Assert` is for. Theoretically, you should always receive a string here, as long
     as you assign the constraint to the correct mapping , but since we do not have generics yet, you should actually
     assert the input type which you receive.
 
-    See [Assert package on Github](https://github.com/beberlei/assert)
+    See [Assert package on Github](https://github.com/webmozarts/assert)
 
 # Context validation
 
@@ -57,14 +61,17 @@ that two passwords are equal:
 
 ```php
 <?php
-use Assert\Assertion;
+
+declare(strict_types=1);
+
+use Webmozart\Assert\Assert;
 use Formidable\Mapping\Constraint\ConstraintInterface;
 
 class PasswordConfirmationConstraint implements ConstraintInterface
 {
     public function __invoke($value) : ValidationResult
     {
-        Assertion::instanceOf($value, UserFormData::class);
+        Assert::instanceOf($value, UserFormData::class);
 
         if ($value->getPassword() !== $value->getPasswordConfirm()) {
             return new ValidationResult(new ValidationError('error.password-mismatch', [], 'passwordConfirm'));
@@ -79,6 +86,8 @@ Now when creating your mapping, you assign the constraint to the parent object m
 
 ```php
 <?php
+declare(strict_types=1);
+
 use Formidable\Mapping\FieldMappingFactory;
 use Formidable\Mapping\ObjectMapping;
 

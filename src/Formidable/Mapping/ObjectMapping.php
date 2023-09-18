@@ -6,6 +6,7 @@ namespace Formidable\Mapping;
 
 use Closure;
 use Formidable\Data;
+use Formidable\FormDataTransferObjectInterface;
 use Formidable\FormError\FormErrorSequence;
 use Formidable\Mapping\Exception\BindFailureException;
 use Formidable\Mapping\Exception\InvalidMappingException;
@@ -17,14 +18,15 @@ use Formidable\Mapping\Exception\NonExistentUnapplyKeyException;
 use Formidable\Mapping\Exception\UnbindFailureException;
 use ReflectionClass;
 use Throwable;
+use TypeError;
 
 use function array_key_exists;
 use function array_values;
 use function class_exists;
 use function is_array;
+use function is_object;
 use function is_string;
 
-/** @template T */
 final class ObjectMapping implements MappingInterface
 {
     use MappingTrait;
@@ -34,11 +36,15 @@ final class ObjectMapping implements MappingInterface
 
     private string $key = '';
 
+    /** @var Closure(mixed...): FormDataTransferObjectInterface  */
     private readonly Closure $apply;
 
     private readonly Closure $unapply;
 
-    /** @param class-string<T> $className */
+    /**
+     * @param class-string<FormDataTransferObjectInterface> $className
+     * @param null|Closure(mixed...): FormDataTransferObjectInterface $apply
+     */
     public function __construct(
         array $mappings,
         private readonly string $className,
@@ -58,25 +64,26 @@ final class ObjectMapping implements MappingInterface
         }
 
         if (! class_exists($className)) {
+            /** @psalm-suppress MixedArgument https://github.com/vimeo/psalm/issues/10215 */
             throw NonExistentMappedClassException::fromNonExistentClass($className);
         }
 
-        $this->apply = $apply ?? function (mixed ...$arguments): mixed {
-            /** @psalm-suppress MixedMethodCall */
-            return new $this->className(...array_values($arguments));
+        $this->apply = $apply ?? function (mixed ...$arguments): FormDataTransferObjectInterface {
+            $formMapping = $this->className;
+            return $formMapping::fromArrayOfArguments(array_values($arguments));
         };
 
-        $this->unapply = $unapply ?? function (mixed $value): array {
-            if (! $value instanceof $this->className) {
-                throw MappedClassMismatchException::fromMismatchedClass($this->className, $value);
+        $this->unapply = $unapply ?? function (object|null $objInstance): array {
+            if (! $objInstance instanceof $this->className) {
+                throw MappedClassMismatchException::fromMismatchedClass($this->className, $objInstance);
             }
 
             $values          = [];
             $reflectionClass = new ReflectionClass($this->className);
 
             foreach ($reflectionClass->getProperties() as $property) {
-                /** @psalm-suppress MixedAssignment */
-                $values[$property->getName()] = $property->getValue($value);
+                /** @var mixed */
+                $values[$property->getName()] = $property->getValue($objInstance);
             }
 
             return $values;
@@ -112,7 +119,7 @@ final class ObjectMapping implements MappingInterface
                 continue;
             }
 
-            /** @psalm-suppress MixedAssignment */
+            /** @var mixed */
             $arguments[$key] = $bindResult->getValue();
         }
 
@@ -120,8 +127,7 @@ final class ObjectMapping implements MappingInterface
             return BindResult::fromFormErrorSequence($formErrorSequence);
         }
 
-        $apply = $this->apply;
-        $value = $apply(...array_values($arguments));
+        $value = ($this->apply)(...array_values($arguments));
 
         if (! $value instanceof $this->className) {
             throw MappedClassMismatchException::fromMismatchedClass($this->className, $value);
@@ -132,9 +138,12 @@ final class ObjectMapping implements MappingInterface
 
     public function unbind(mixed $value): Data
     {
-        $data    = Data::none();
-        $unapply = $this->unapply;
-        $values  = $unapply($value);
+        if (! is_object($value)) {
+            throw new TypeError('cannot unbind a non object in object mapping');
+        }
+
+        $data   = Data::none();
+        $values = ($this->unapply)($value);
 
         if (! is_array($values)) {
             throw InvalidUnapplyResultException::fromInvalidUnapplyResult($values);

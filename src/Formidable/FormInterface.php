@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface FormInterface
 {
-    public function fill(mixed $formData): self;
+    public function fill(object $formData): self;
 
     public function withDefaults(Data $data): self;
 
