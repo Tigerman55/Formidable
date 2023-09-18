@@ -30,7 +30,7 @@ or database row.
 The form data object accepts data via constructor injection, and reads the properties for populating the Form from the
 data via reflection. The PersonFormData from the above example looks like this:
 
-```
+```php
 <?php
 final class PersonFormData
 {

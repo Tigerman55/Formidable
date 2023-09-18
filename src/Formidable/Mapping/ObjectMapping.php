@@ -24,7 +24,6 @@ use function class_exists;
 use function is_array;
 use function is_string;
 
-/** @template T */
 final class ObjectMapping implements MappingInterface
 {
     use MappingTrait;
@@ -34,11 +33,15 @@ final class ObjectMapping implements MappingInterface
 
     private string $key = '';
 
+    /** @var Closure(mixed...): object  */
     private readonly Closure $apply;
 
     private readonly Closure $unapply;
 
-    /** @param class-string<T> $className */
+    /**
+     * @param class-string $className
+     * @param Closure(mixed...): object|null $apply
+     */
     public function __construct(
         array $mappings,
         private readonly string $className,
@@ -58,25 +61,25 @@ final class ObjectMapping implements MappingInterface
         }
 
         if (! class_exists($className)) {
+            /** @psalm-suppress MixedArgument https://github.com/vimeo/psalm/issues/10215 */
             throw NonExistentMappedClassException::fromNonExistentClass($className);
         }
 
-        $this->apply = $apply ?? function (mixed ...$arguments): mixed {
-            /** @psalm-suppress MixedMethodCall */
+        $this->apply = $apply ?? function (mixed ...$arguments): object {
             return new $this->className(...array_values($arguments));
         };
 
-        $this->unapply = $unapply ?? function (mixed $value): array {
-            if (! $value instanceof $this->className) {
-                throw MappedClassMismatchException::fromMismatchedClass($this->className, $value);
+        $this->unapply = $unapply ?? function (null|object $objInstance): array {
+            if (! $objInstance instanceof $this->className) {
+                throw MappedClassMismatchException::fromMismatchedClass($this->className, $objInstance);
             }
 
             $values          = [];
             $reflectionClass = new ReflectionClass($this->className);
 
             foreach ($reflectionClass->getProperties() as $property) {
-                /** @psalm-suppress MixedAssignment */
-                $values[$property->getName()] = $property->getValue($value);
+                /** @var mixed */
+                $values[$property->getName()] = $property->getValue($objInstance);
             }
 
             return $values;
@@ -112,7 +115,7 @@ final class ObjectMapping implements MappingInterface
                 continue;
             }
 
-            /** @psalm-suppress MixedAssignment */
+            /** @var mixed */
             $arguments[$key] = $bindResult->getValue();
         }
 
