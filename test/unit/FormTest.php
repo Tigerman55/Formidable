@@ -35,7 +35,7 @@ class FormTest extends TestCase
         $form = (new Form($mapping))->withDefaults($data);
 
         self::assertFalse($form->hasErrors());
-        self::assertSame('bar', $form->getField('foo')->getValue());
+        self::assertSame('bar', $form->getField('foo')->value);
     }
 
     #[Test]
@@ -66,7 +66,7 @@ class FormTest extends TestCase
 
         $form = new Form($formMapping);
         $form = $form->fill($formData);
-        self::assertSame('defaultFooValue', $form->getField('foo')->getValue());
+        self::assertSame('defaultFooValue', $form->getField('foo')->value);
     }
 
     #[Test]
@@ -83,7 +83,7 @@ class FormTest extends TestCase
         $form = (new Form($mapping))->bind($data);
 
         self::assertTrue($form->hasErrors());
-        self::assertSame('foo', iterator_to_array($form->getGlobalErrors())[0]->getMessage());
+        self::assertSame('foo', iterator_to_array($form->getGlobalErrors())[0]->message);
         $this->expectException(InvalidDataException::class);
         $form->getValue();
     }
@@ -179,8 +179,8 @@ class FormTest extends TestCase
             new Form(self::createStub(MappingInterface::class))
         )->withError(new FormError('bar', 'foo'));
         self::assertTrue($form->hasErrors());
-        self::assertSame('bar', iterator_to_array($form->getErrors())[0]->getKey());
-        self::assertSame('foo', iterator_to_array($form->getErrors())[0]->getMessage());
+        self::assertSame('bar', iterator_to_array($form->getErrors())[0]->key);
+        self::assertSame('foo', iterator_to_array($form->getErrors())[0]->message);
     }
 
     #[Test]
@@ -189,8 +189,8 @@ class FormTest extends TestCase
         $form = (new Form(self::createStub(MappingInterface::class)))->withGlobalError('foo');
         self::assertTrue($form->hasErrors());
         self::assertTrue($form->hasGlobalErrors());
-        self::assertSame('', iterator_to_array($form->getGlobalErrors())[0]->getKey());
-        self::assertSame('foo', iterator_to_array($form->getGlobalErrors())[0]->getMessage());
+        self::assertSame('', iterator_to_array($form->getGlobalErrors())[0]->key);
+        self::assertSame('foo', iterator_to_array($form->getGlobalErrors())[0]->message);
     }
 
     #[Test]
@@ -199,9 +199,9 @@ class FormTest extends TestCase
         $form  = new Form(self::createStub(MappingInterface::class));
         $field = $form->getField('foo');
 
-        self::assertSame('foo', $field->getKey());
-        self::assertSame('', $field->getValue());
-        self::assertTrue($field->getErrors()->isEmpty());
+        self::assertSame('foo', $field->key);
+        self::assertSame('', $field->value);
+        self::assertTrue($field->errors->isEmpty());
     }
 
     private function getSimpleMappingMock(): MappingInterface

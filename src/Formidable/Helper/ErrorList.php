@@ -35,7 +35,7 @@ final class ErrorList
         foreach ($errors as $error) {
             $list->appendChild($document->createElement(
                 'li',
-                htmlspecialchars($errorFormatter($error->getMessage(), $error->getArguments()))
+                htmlspecialchars($errorFormatter($error->message, $error->arguments))
             ));
         }
 

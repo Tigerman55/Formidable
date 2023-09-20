@@ -42,8 +42,8 @@ class FloatFormatterTest extends TestCase
         self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
-        self::assertSame('foo', $error->getKey());
-        self::assertSame('error.float', $error->getMessage());
+        self::assertSame('foo', $error->key);
+        self::assertSame('error.float', $error->message);
     }
 
     #[Test]
@@ -54,8 +54,8 @@ class FloatFormatterTest extends TestCase
         self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
-        self::assertSame('foo', $error->getKey());
-        self::assertSame('error.required', $error->getMessage());
+        self::assertSame('foo', $error->key);
+        self::assertSame('error.required', $error->message);
     }
 
     #[Test]

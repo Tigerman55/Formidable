@@ -14,11 +14,11 @@ final class InputCheckbox
     public function __invoke(Field $field, array $htmlAttributes = []): string
     {
         $htmlAttributes['type']  = 'checkbox';
-        $htmlAttributes['id']    = 'input.' . $field->getKey();
-        $htmlAttributes['name']  = $field->getKey();
+        $htmlAttributes['id']    = 'input.' . $field->key;
+        $htmlAttributes['name']  = $field->key;
         $htmlAttributes['value'] = 'true';
 
-        if ($field->getValue() === 'true') {
+        if ($field->value === 'true') {
             $htmlAttributes['checked'] = 'checked';
         }
 

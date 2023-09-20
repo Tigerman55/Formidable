@@ -111,7 +111,7 @@ class ObjectMappingTest extends TestCase
 
         $bindResult = $objectMapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
-        self::assertSame('bat', iterator_to_array($bindResult->getFormErrorSequence())[0]->getMessage());
+        self::assertSame('bat', iterator_to_array($bindResult->getFormErrorSequence())[0]->message);
     }
 
     #[Test]
@@ -149,8 +149,8 @@ class ObjectMappingTest extends TestCase
         $bindResult = $objectMapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
         $formError = iterator_to_array($bindResult->getFormErrorSequence())[0];
-        self::assertSame('error', $formError->getMessage());
-        self::assertSame('foo[bar]', $formError->getKey());
+        self::assertSame('error', $formError->message);
+        self::assertSame('foo[bar]', $formError->key);
     }
 
     #[Test]

@@ -13,12 +13,12 @@ final class Textarea
 
     public function __invoke(Field $field, array $htmlAttributes = []): string
     {
-        $htmlAttributes['id']   = 'input.' . $field->getKey();
-        $htmlAttributes['name'] = $field->getKey();
+        $htmlAttributes['id']   = 'input.' . $field->key;
+        $htmlAttributes['name'] = $field->key;
 
         $document = new DOMDocument('1.0', 'utf-8');
         $textarea = $document->createElement('textarea');
-        $textarea->appendChild($document->createTextNode($field->getValue()));
+        $textarea->appendChild($document->createTextNode($field->value));
         $document->appendChild($textarea);
         $this->addAttributes($textarea, $htmlAttributes);
 

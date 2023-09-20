@@ -79,7 +79,7 @@ class RepeatedMappingTest extends TestCase
         $mapping    = (new RepeatedMapping($wrappedMapping))->withPrefixAndRelativeKey('foo', 'bar');
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
-        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
+        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->message);
     }
 
     #[Test]
@@ -107,8 +107,8 @@ class RepeatedMappingTest extends TestCase
             );
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
-        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
-        self::assertSame('foo[bar][0]', $bindResult->getFormErrorSequence()->getIterator()->current()->getKey());
+        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->message);
+        self::assertSame('foo[bar][0]', $bindResult->getFormErrorSequence()->getIterator()->current()->key);
     }
 
     #[Test]

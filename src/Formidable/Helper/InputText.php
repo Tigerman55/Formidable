@@ -19,9 +19,9 @@ final class InputText
             $htmlAttributes['type'] = 'text';
         }
 
-        $htmlAttributes['id']    = 'input.' . $field->getKey();
-        $htmlAttributes['name']  = $field->getKey();
-        $htmlAttributes['value'] = $field->getValue();
+        $htmlAttributes['id']    = 'input.' . $field->key;
+        $htmlAttributes['name']  = $field->key;
+        $htmlAttributes['value'] = $field->value;
 
         $document = new DOMDocument('1.0', 'utf-8');
         $input    = $document->createElement('input');

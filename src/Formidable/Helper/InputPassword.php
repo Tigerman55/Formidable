@@ -14,8 +14,8 @@ final class InputPassword
     public function __invoke(Field $field, array $htmlAttributes = []): string
     {
         $htmlAttributes['type'] = 'password';
-        $htmlAttributes['id']   = 'input.' . $field->getKey();
-        $htmlAttributes['name'] = $field->getKey();
+        $htmlAttributes['id']   = 'input.' . $field->key;
+        $htmlAttributes['name'] = $field->key;
 
         $document = new DOMDocument('1.0', 'utf-8');
         $input    = $document->createElement('input');

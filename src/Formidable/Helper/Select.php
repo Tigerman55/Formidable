@@ -21,14 +21,14 @@ final class Select
 
     public function __invoke(Field $field, array $options, array $htmlAttributes = []): string
     {
-        $htmlAttributes['id'] = 'input.' . $field->getKey();
+        $htmlAttributes['id'] = 'input.' . $field->key;
 
         if (array_key_exists('multiple', $htmlAttributes)) {
-            $htmlAttributes['name'] = $field->getKey() . '[]';
+            $htmlAttributes['name'] = $field->key . '[]';
             $selectedValues         = $field->getNestedValues();
         } else {
-            $htmlAttributes['name'] = $field->getKey();
-            $selectedValues         = [$field->getValue()];
+            $htmlAttributes['name'] = $field->key;
+            $selectedValues         = [$field->value];
         }
 
         $document = new DOMDocument('1.0', 'utf-8');
