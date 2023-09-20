@@ -15,18 +15,18 @@ class FormErrorTest extends TestCase
     #[Test]
     public function keyRetrieval(): void
     {
-        self::assertSame('foo', (new FormError('foo', ''))->getKey());
+        self::assertSame('foo', (new FormError('foo', ''))->key);
     }
 
     #[Test]
     public function messageRetrieval(): void
     {
-        self::assertSame('foo', (new FormError('', 'foo'))->getMessage());
+        self::assertSame('foo', (new FormError('', 'foo'))->message);
     }
 
     #[Test]
     public function argumentsRetrieval(): void
     {
-        self::assertSame(['foo' => 'bar'], (new FormError('', '', ['foo' => 'bar']))->getArguments());
+        self::assertSame(['foo' => 'bar'], (new FormError('', '', ['foo' => 'bar']))->arguments);
     }
 }

@@ -19,14 +19,14 @@ class FieldTest extends TestCase
     public function keyRetrieval(): void
     {
         $field = new Field('foo', '', new FormErrorSequence(), Data::none());
-        self::assertSame('foo', $field->getKey());
+        self::assertSame('foo', $field->key);
     }
 
     #[Test]
     public function valueRetrieval(): void
     {
         $field = new Field('', 'foo', new FormErrorSequence(), Data::none());
-        self::assertSame('foo', $field->getValue());
+        self::assertSame('foo', $field->value);
     }
 
     #[Test]
@@ -34,7 +34,7 @@ class FieldTest extends TestCase
     {
         $errors = new FormErrorSequence();
         $field  = new Field('', '', $errors, Data::none());
-        self::assertSame($errors, $field->getErrors());
+        self::assertSame($errors, $field->errors);
     }
 
     #[Test]

@@ -17,7 +17,7 @@ class FormErrorAssertion
         $actualMessages = [];
 
         foreach ($formErrorSequence as $formError) {
-            $actualMessages[$formError->getKey()] = $formError->getMessage();
+            $actualMessages[$formError->key] = $formError->message;
         }
 
         $testCase::assertSame($expectedMessages, $actualMessages);

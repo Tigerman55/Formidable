@@ -62,8 +62,8 @@ class TimeFormatterTest extends TestCase
         self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
-        self::assertSame('foo', $error->getKey());
-        self::assertSame('error.time', $error->getMessage());
+        self::assertSame('foo', $error->key);
+        self::assertSame('error.time', $error->message);
     }
 
     #[Test]
@@ -74,8 +74,8 @@ class TimeFormatterTest extends TestCase
         self::assertCount(1, $bindResult->getFormErrorSequence());
 
         $error = iterator_to_array($bindResult->getFormErrorSequence())[0];
-        self::assertSame('foo', $error->getKey());
-        self::assertSame('error.required', $error->getMessage());
+        self::assertSame('foo', $error->key);
+        self::assertSame('error.required', $error->message);
     }
 
     #[Test]

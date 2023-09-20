@@ -63,8 +63,8 @@ class FieldMappingTest extends TestCase
         );
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
-        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
-        self::assertSame('foo', $bindResult->getFormErrorSequence()->getIterator()->current()->getKey());
+        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->message);
+        self::assertSame('foo', $bindResult->getFormErrorSequence()->getIterator()->current()->key);
     }
 
     #[Test]

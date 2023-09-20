@@ -90,7 +90,7 @@ class OptionalMappingTest extends TestCase
         $wrappedMapping->method('withPrefixAndRelativeKey')->with('', 'foo')->willReturn($wrappedMapping);
 
         $mapping = (new OptionalMapping($wrappedMapping))->withPrefixAndRelativeKey('', 'foo');
-        self::assertSame('bar', $mapping->bind($data)->getFormErrorSequence()->getIterator()->current()->getMessage());
+        self::assertSame('bar', $mapping->bind($data)->getFormErrorSequence()->getIterator()->current()->message);
     }
 
     #[Test]
@@ -121,7 +121,7 @@ class OptionalMappingTest extends TestCase
             ->withPrefixAndRelativeKey('', 'foo');
         $bindResult = $mapping->bind($data);
         self::assertFalse($bindResult->isSuccess());
-        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->getMessage());
+        self::assertSame('bar', $bindResult->getFormErrorSequence()->getIterator()->current()->message);
     }
 
     #[Test]

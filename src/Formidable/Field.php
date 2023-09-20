@@ -9,26 +9,11 @@ use Formidable\FormError\FormErrorSequence;
 final class Field
 {
     public function __construct(
-        private readonly string $key,
-        private readonly string $value,
-        private readonly FormErrorSequence $errors,
+        public readonly string $key,
+        public readonly string $value,
+        public readonly FormErrorSequence $errors,
         private readonly Data $data
     ) {
-    }
-
-    public function getKey(): string
-    {
-        return $this->key;
-    }
-
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-    public function getErrors(): FormErrorSequence
-    {
-        return $this->errors;
     }
 
     public function hasErrors(): bool
