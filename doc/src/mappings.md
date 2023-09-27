@@ -132,8 +132,9 @@ mappings:
     not submit a time zone, so it is important to pass a time zone to the factory in which the datetime should be
     interpreted, if not UTC, and set `$localTime` to `true`.
 
-!!!note "Optional dependencies for constraints"
-
-    Some constraints require additional PHP extensions or other libraries to function. For instance, the string length
-    constraints require `ext-iconv` extension to check the actual character length, while the number range constraints
-    require the `litipk/php-bignumbers` library.
+> [!NOTE] 
+> Optional dependencies for constraints
+>
+>    Some constraints require additional PHP extensions or other libraries to function. For instance, the string length
+>    constraints require `ext-iconv` extension to check the actual character length, while the number range constraints
+>    require the `litipk/php-bignumbers` library.
